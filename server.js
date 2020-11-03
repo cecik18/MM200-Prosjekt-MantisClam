@@ -6,7 +6,7 @@ const {
     decrypt
 } = require("./modules/cesarcipher");
 
-const credentials = process.env.DATABASE_URL || require("./NEI").credentials;
+const credentials = process.env.DATABASE_URL;
 
 const db = new(require("./modules/storagehandler"))(credentials);
 
