@@ -1,13 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const {
-    Router
-  } = require('express');
-  const secureEndpoints = require("./modules/secureEndpoints")
-  const user = require("./modules/user")
-
-const pg = require("pg");
+  Router
+} = require('express');
+const secureEndpoints = require("./modules/secureEndpoints")
+const user = require("./modules/user")
 const {
     encrypt,
     decrypt
@@ -18,27 +15,39 @@ const credentials = process.env.DATABASE_URL;
 const db = new(require("./modules/storagehandler"))(credentials);
 
 const server = express();
-server.set('port', (process.env.PORT || 8080));
+const port = (process.env.PORT || 8080);
+
+
+server.set('port', port);
 server.use(express.static('public'));
 server.use(bodyParser.json());
+// https://expressjs.com/en/guide/routing.html
+server.use("/secure", secureEndpoints);
+
+
+server.post("/user", async function (req, res) {
+  const newUser = new user(req.body.email, req.body.password);
+  await newUser.create();
+  res.status(200).json(newUser).end();
+});
 
 
 // 1. Lagre meldinger ?
 
 let meldinger = [];
 
-server.post("/user", async function (req, res) {
+server.post("/secret", async function (req, res) {
 
-    const inputEmailLogin = req.body.inputEmailLogin;
-    const inputPasswordLogin = req.body.inputPasswordLogin;
-    const cipherText = encrypt(inputEmailLogin, inputPasswordLogin);
+    const message = req.body.message;
+    const secretKey = req.body.secretKey;
+    const cipherText = encrypt(message, secretKey);
 
-    let result = await db.saveUser(cipherText);
+    let result = await db.saveSecret(cipherText);
     if (result instanceof Error) {
         res.status(500).end()
     } else {
         res.status(200).json({
-            "loginId": result
+            "secretId": result
         }).end();
     }
 
@@ -57,8 +66,6 @@ server.get("/secret/:id/:key", async function (req, res) {
 
 });
 
-
-
 server.listen(server.get('port'), function () {
-    console.log('server running', server.get('port'));
+  console.log('server running', server.get('port'));
 });

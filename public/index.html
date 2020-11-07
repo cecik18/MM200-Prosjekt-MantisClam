@@ -45,10 +45,10 @@
 
         document.getElementById("loginBTN").onclick = function () {
 
-            let username = usernameInput.value
+            let email = emailInput.value
             let password = passwordInput.value
 
-            credentials = "Basic " + window.btoa(`${username}:${password}`)
+            credentials = "Basic " + window.btoa(`${email}:${password}`)
 
             let config = {
                 method: "POST",
@@ -69,13 +69,13 @@
 
 //Create ------------------------------------------------------------------------------------------------------------------------------------
     
-        const usernameInput = document.getElementById("createEmail");
+        const emailInput = document.getElementById("createEmail");
         const passwordInput = document.getElementById("createPassword");
 
         document.getElementById("createBTN").onclick = function (evt) {
 
             let body = {
-                username: usernameInput.value,
+                email: emailInput.value,
                 password: passwordInput.value
             }
             let config = {

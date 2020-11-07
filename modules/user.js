@@ -1,5 +1,8 @@
 const database = require("./storagehandler")
-const crypto = require('crypto');
+const {
+    encrypt,
+    decrypt
+} = require("./modules/cesarcipher");
 const secret = process.env.hashSecret || require("../localenv").hashSecret;
 /*
 const secret = 'abcdefg';
@@ -8,17 +11,15 @@ const hash = crypto.createHmac('sha256', secret)
                    .digest('hex');
 */
 class User {
-    constructor(username, password) {
-        this.username = username;
-        this.password = crypto.createHmac('sha256', secret)
-            .update(password)
-            .digest('hex');
+    constructor(email, password) {
+        this.email = email;
+        this.password = password;
         this.valid = false
     }
 
     async create() {
         try {
-            let respons = await database.insertUser(this.username, this.password);
+            let respons = await database.insertUser(this.email, this.password);
         } catch (error) {
             console.error(error)
         }
