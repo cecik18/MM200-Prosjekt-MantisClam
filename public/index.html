@@ -1,72 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cesar Message app. Only for tyrants</title>
+    <link rel="stylesheet" href="page1_stylesheet_Cecilia_Versjon3.css">
+    <title>Login page</title>
 </head>
 
 <body>
 
-    <section>
-        <header>
-            Give us all your secrets ;)
-        </header>
-        <input type="text" id="message" /><br>
-        <input type="number" id="secretKey" /><br>
-        <button id="crypterBT">Crypter</button>
-        <label id="secretId"></label>
-    </section>
+  <div class="grid-container">
+      <div id="taskPlannerHeader">MantisClam Taskplanner</div>
 
-    <section>
-        <header>
-            What do you want to know
-        </header>
-        <input type="number" id="id" /><br>
-        <input type="number" id="key" /><br>
-        <button id="decrypterBT">Crypter</button>
-        <label id="decryptedMessage"></label>
-    </section>
+      <div id="taskPlannerLogin">Sign in
+        <form id="loginForm">
+            <input id="inputEmailLogin" type="email" placeholder="Email"/>
+            <br>
+            <input id="inputPasswordLogin" type="password" placeholder="Password" />
+            <br>
+            <button id="loginBTN" type="submit">Sign in</button>
+            <label id="loginId"></label>
+          </form>
+      </div>
+      <div id="taskPlannerCreate">Sign up
+        <form id="CreateForm">
+            <input id="inputEmailCreate" type="email" placeholder="Email"/>
+            <br>
+            <input id="inputPasswordCreate" type="password" placeholder="Password" />
+            <br>
+            <button id="createBTN" type="submit">Create new user</button>
+            <label id="submitId"></label>
+          </form>
+      </div>
+  </div>
 
+    
+</body>
 
-    <script>
+<script>
 
-        document.getElementById("decrypterBT").onclick = function () {
+    document.getElementById("loginBTN").onclick = function () {
 
-            const secretId = document.getElementById("id").value;
-            const key = document.getElementById("key").value;
-
-            fetch(`/secret/${secretId}/${key}`).then(data => {
-                return data.json()
-            }).then(info => {
-                document.getElementById("decryptedMessage").innerHTML = info.message;
-            })
-        }
-
-
-        document.getElementById("crypterBT").onclick = function () {
-
-            const tekst = document.getElementById("message").value;
-            const key = document.getElementById("secretKey").value;
+            const loginMail = document.getElementById("inputEmailLogin").value;
+            const loginPswrd = document.getElementById("inputPasswordLogin").value;
 
             const config = {
                 method: "POST",
-                body: JSON.stringify({ message: tekst, secretKey: key }),
+                body: JSON.stringify({ inputEmailLogin: loginMail, inputPasswordLogin: loginPswrd }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }
 
-            fetch("/secret", config).then(data => {
+            fetch("/user", config).then(data => {
                 return data.json()
             }).then(info => {
-                document.getElementById("secretId").innerHTML = info.secretId;
+                document.getElementById("loginId").innerHTML = info.loginId;
             })
         }
 
-    </script>
 
-</body>
+</script>
+
 
 </html>
