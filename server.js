@@ -20,18 +20,18 @@ server.use(bodyParser.json());
 
 let meldinger = [];
 
-server.post("/secret", async function (req, res) {
+server.post("/user", async function (req, res) {
 
-    const message = req.body.message;
-    const secretKey = req.body.secretKey;
-    const cipherText = encrypt(message, secretKey);
+    const inputEmailLogin = req.body.inputEmailLogin;
+    const inputPasswordLogin = req.body.inputPasswordLogin;
+    const cipherText = encrypt(inputEmailLogin, inputPasswordLogin);
 
-    let result = await db.saveSecret(cipherText);
+    let result = await db.saveUser(cipherText);
     if (result instanceof Error) {
         res.status(500).end()
     } else {
         res.status(200).json({
-            "secretId": result
+            "loginId": result
         }).end();
     }
 

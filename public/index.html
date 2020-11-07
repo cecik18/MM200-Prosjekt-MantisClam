@@ -14,9 +14,9 @@
 
       <div id="taskPlannerLogin">Sign in
         <form id="loginForm">
-            <input id="inputEmailLogin" type="email" placeholder="Email"/>
+            <input id="loginEmail" type="email" placeholder="Email"/>
             <br>
-            <input id="inputPasswordLogin" type="password" placeholder="Password" />
+            <input id="loginPassword" type="password" placeholder="Password" />
             <br>
             <button id="loginBTN" type="submit">Sign in</button>
             <label id="loginId"></label>
@@ -24,12 +24,12 @@
       </div>
       <div id="taskPlannerCreate">Sign up
         <form id="CreateForm">
-            <input id="inputEmailCreate" type="email" placeholder="Email"/>
+            <input id="createEmail" type="email" placeholder="Email"/>
             <br>
-            <input id="inputPasswordCreate" type="password" placeholder="Password" />
+            <input id="createPassword" type="password" placeholder="Password" />
             <br>
             <button id="createBTN" type="submit">Create new user</button>
-            <label id="submitId"></label>
+            <label id="createId"></label>
           </form>
       </div>
   </div>
@@ -39,25 +39,62 @@
 
 <script>
 
-    document.getElementById("loginBTN").onclick = function () {
+    //Login -------------------------------------------------------------------------------------------------------------------------------------
 
-            const loginMail = document.getElementById("inputEmailLogin").value;
-            const loginPswrd = document.getElementById("inputPasswordLogin").value;
+       let credentials = null;
 
-            const config = {
+        document.getElementById("loginBTN").onclick = function () {
+
+            let username = usernameInput.value
+            let password = passwordInput.value
+
+            credentials = "Basic " + window.btoa(`${username}:${password}`)
+
+            let config = {
                 method: "POST",
-                body: JSON.stringify({ inputEmailLogin: loginMail, inputPasswordLogin: loginPswrd }),
                 headers: {
-                    'Content-Type': 'application/json'
+                    "content-type": "application/json",
+                    "authorization": credentials
                 }
             }
 
-            fetch("/user", config).then(data => {
-                return data.json()
-            }).then(info => {
-                document.getElementById("loginId").innerHTML = info.loginId;
+            fetch("/user", config).then(resp => {
+                console.log(resp.status);
             })
+
+
         }
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Create ------------------------------------------------------------------------------------------------------------------------------------
+    
+        const usernameInput = document.getElementById("createEmail");
+        const passwordInput = document.getElementById("createPassword");
+
+        document.getElementById("createBTN").onclick = function (evt) {
+
+            let body = {
+                username: usernameInput.value,
+                password: passwordInput.value
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/user", config).then(resp => {
+                console.log(resp.status);
+            })
+
+
+        }
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 </script>
