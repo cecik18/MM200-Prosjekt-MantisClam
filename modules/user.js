@@ -1,8 +1,9 @@
 const database = require("./storagehandler")
+const crypto = require('crypto');
 const {
     encrypt,
     decrypt
-} = require("./modules/cesarcipher");
+} = require("./cesarcipher");
 const secret = process.env.hashSecret || require("../localenv").hashSecret;
 /*
 const secret = 'abcdefg';
@@ -13,7 +14,9 @@ const hash = crypto.createHmac('sha256', secret)
 class User {
     constructor(email, password) {
         this.email = email;
-        this.password = password;
+        this.password = crypto.createHmac('sha256', secret)
+            .update(password)
+            .digest('hex');
         this.valid = false
     }
 

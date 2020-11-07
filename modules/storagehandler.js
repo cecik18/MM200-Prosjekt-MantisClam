@@ -17,7 +17,7 @@ class StorageHandler {
         let results = null;
         try {
             await client.connect();
-            results = await client.query('INSERT INTO "public"."users"("email", "password") VALUES($1, $2) RETURNING *;', [email, password]);
+            results = await client.query('INSERT INTO "public"."Users"("email", "password") VALUES($1, $2) RETURNING *;', [email, password]);
             results = results.rows[0].message;
             client.end();
         } catch (err) {

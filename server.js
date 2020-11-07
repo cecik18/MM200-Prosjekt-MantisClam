@@ -1,18 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const {
-  Router
-} = require('express');
 const secureEndpoints = require("./modules/secureEndpoints")
 const user = require("./modules/user")
 const {
     encrypt,
     decrypt
 } = require("./modules/cesarcipher");
-
-const credentials = process.env.DATABASE_URL;
-
-const db = new(require("./modules/storagehandler"))(credentials);
 
 const server = express();
 const port = (process.env.PORT || 8080);
