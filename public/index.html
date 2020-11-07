@@ -74,6 +74,11 @@
 
         document.getElementById("createBTN").onclick = function (evt) {
 
+            if (usernameInput.value.length < 3 && passwordInput.value.length < 3) {
+                alert("NEII!!!!");
+                return
+            }
+
             let body = {
                 email: emailInput.value,
                 password: passwordInput.value
