@@ -18,11 +18,12 @@ server.use(bodyParser.json());
 server.use("/secure", secureEndpoints);
 
 
-server.post("/user", async function (req, res) {
+server.post("/Users", async function (req, res) {
   const newUser = new user(req.body.email, req.body.password);
   await newUser.create();
   res.status(200).json(newUser).end();
 });
+
 
 
 // 1. Lagre meldinger ?
