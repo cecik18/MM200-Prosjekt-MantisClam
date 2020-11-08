@@ -1,9 +1,5 @@
 const database = require("./storagehandler")
 const crypto = require('crypto');
-const {
-    encrypt,
-    decrypt
-} = require("./cesarcipher");
 const secret = process.env.hashSecret || require("../localenv").hashSecret;
 /*
 const secret = 'abcdefg';

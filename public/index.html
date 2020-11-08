@@ -74,6 +74,8 @@
 
         document.getElementById("createBTN").onclick = function (evt) {
 
+            evt.preventDefault();
+
             if (usernameInput.value.length < 3 && passwordInput.value.length < 3) {
                 alert("NEII!!!!");
                 return
