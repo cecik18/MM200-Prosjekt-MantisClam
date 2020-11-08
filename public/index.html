@@ -57,13 +57,13 @@
                     "authorization": credentials
                 }
             }
+        
 
-            fetch("/Users", config).then(resp => {
+            fetch("/user", config).then(resp => {
                 console.log(resp.status);
             })
 
-
-
+            
 
         }
 
@@ -93,7 +93,7 @@
                 body: JSON.stringify(body)
             }
 
-            fetch("/Users", config).then(resp => {
+            fetch("/user", config).then(resp => {
                 console.log(resp.status);
             })
 
