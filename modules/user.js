@@ -10,15 +10,18 @@ const hash = crypto.createHmac('sha256', secret)
 class User {
     constructor(email, password) {
         this.email = email;
-        this.password = crypto.createHmac('sha256', secret)
+        this.password = crypto.createHmac('sha256', secret) //her krypteres passord, secret må stemme for å dekryptere
             .update(password)
+            .digest('hex');
+            this.userid = crypto.createHmac('sha256', secret) //her krypteres userid, secret må stemme for å dekryptere
+            .update(email)
             .digest('hex');
         this.valid = false
     }
 
     async create() {
         try {
-            let respons = await database.insertUser(this.email, this.password);
+            let respons = await database.insertUser(this.userid, this.email, this.password);
         } catch (error) {
             console.error(error)
         }

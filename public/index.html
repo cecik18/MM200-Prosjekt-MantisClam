@@ -45,10 +45,11 @@
 
         document.getElementById("loginBTN").onclick = function () {
 
+            let userid = emailInput.value
             let email = emailInput.value
             let password = passwordInput.value
 
-            credentials = "Basic " + window.btoa(`${email}:${password}`)
+            credentials = "Basic " + window.btoa(`${userid}:${email}:${password}`)
 
             let config = {
                 method: "POST",
@@ -57,14 +58,12 @@
                     "authorization": credentials
                 }
             }
-        
 
-            fetch("/user", config).then(resp => {
+            fetch(`/user`, config).then(resp => {
                 console.log(resp.status);
             })
 
-            
-
+        
         }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -82,6 +81,7 @@
             }
 
             let body = {
+                userid: emailInput.value,
                 email: emailInput.value,
                 password: passwordInput.value
             }

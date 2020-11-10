@@ -1,7 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const secureEndpoints = require("./modules/secureEndpoints")
+const database = require("./modules/storagehandler")
 const user = require("./modules/user")
+const {
+    Router
+  } = require('express');
 const {
     encrypt,
     decrypt
@@ -17,11 +21,19 @@ server.use(bodyParser.json());
 // https://expressjs.com/en/guide/routing.html
 server.use("/secure", secureEndpoints);
 
-
+//sender ny bruker til db
 server.post("/user", async function (req, res) {
-  const newUser = new user(req.body.email, req.body.password);
+  const newUser = new user(req.body.userid, req.body.email, req.body.password);
   await newUser.create();
   res.status(200).json(newUser).end();
+});
+
+server.get("/user/:userid/:email/:password", async function (req, res) {
+    const userData = await database.retrieveUser(req.params.userid, req.params.email, req.params.password);
+    res.status(200).json({
+        userData: userData
+    }).end()
+
 });
 
 

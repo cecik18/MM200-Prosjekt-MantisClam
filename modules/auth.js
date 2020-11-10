@@ -4,17 +4,17 @@ const authenticator = (req, res, next) => {
     }
 
     const credentials = req.headers.authorization.split(' ')[1];
-    const [email, password] = Buffer.from(credentials, 'base64').toString('UTF-8').split(":");
+    const [userid, email, password] = Buffer.from(credentials, 'base64').toString('UTF-8').split(":");
 
-    const user = authenticate(email, password)
+    const user = authenticate(userid, email, password)
     if (user) {
         return res.status(403).end()
     }
     next();
 }
 
-function authenticate(email, password) {
-    return email && password;
+function authenticate(userid, email, password) {
+    return userid && email && password;
 }
 
 
