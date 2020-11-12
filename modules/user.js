@@ -8,26 +8,33 @@ const hash = crypto.createHmac('sha256', secret)
                    .digest('hex');
 */
 class User {
-    constructor(email, password) {
-        this.email = email;
+    constructor(username, password) {
+        this.username = username;
         this.password = crypto.createHmac('sha256', secret) //her krypteres passord, secret må stemme for å dekryptere
             .update(password)
-            .digest('hex');
-            this.userid = crypto.createHmac('sha256', secret) //her krypteres userid, secret må stemme for å dekryptere
-            .update(email)
             .digest('hex');
         this.valid = false
     }
 
     async create() {
         try {
-            let respons = await database.insertUser(this.userid, this.email, this.password);
+            let respons = await database.insertUser(this.username, this.password);
+            return respons;
         } catch (error) {
             console.error(error)
         }
     }
 
+    /*async validate() {
+        try {
+            let respons = await database.retrieveUser(this.username, this.password);
+            return respons;
+        } catch (error) {
+            console.error(error)
+        }
+    } */
 }
+
 
 
 module.exports = User

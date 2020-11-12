@@ -14,13 +14,13 @@ class StorageHandler {
     }
 
     //hvor skal brukerinfo legges
-    async insertUser(userid, email, password) {
+    async insertUser(username, password) {
         const client = new pg.Client(this.credentials);
         let results = null;
         try {
             await client.connect();
-            results = await client.query('INSERT INTO "public"."Users"("userid", "email", "password") VALUES($1, $2, $3) RETURNING *;', [userid, email, password]);
-            results = results.rows[0].message;
+            results = await client.query('INSERT INTO "Users"("username", "password") VALUES($1, $2) RETURNING *;', [username, password]);
+            results = results.rows[0];
             client.end();
         } catch (err) {
             client.end();
@@ -31,13 +31,13 @@ class StorageHandler {
         return results;
     }
 
-    async retrieveUser(userid, email, password) {
+    async retrieveUser(username, password) {
         const client = new pg.Client(this.credentials);
         let results = null;
         try {
             await client.connect();
-            results = await client.query('SELECT * from "public"."Users"("userid", "email", "password") VALUES($1, $2, $3) RETURNING *;', [userid, email, password]);
-            results = results.rows[0].message;
+            results = await client.query('SELECT * FROM "Users" WHERE username=$1 AND password=$2;', [username, password]);
+            results = results.rows[0];
             client.end();
         } catch (err) {
             client.end();
@@ -46,7 +46,6 @@ class StorageHandler {
 
         return results;
     }
-
 
 }
 

@@ -41,18 +41,24 @@
 
     //Login -------------------------------------------------------------------------------------------------------------------------------------
 
+
+        const emailLogin = document.getElementById("loginEmail");
+        const passwordLogin = document.getElementById("loginPassword");
+
        let credentials = null;
 
-        document.getElementById("loginBTN").onclick = function () {
+       loginForm.onsubmit = submit;
 
-            let userid = emailInput.value
-            let email = emailInput.value
-            let password = passwordInput.value
+        function submit (evt) {
+            evt.preventDefault();
 
-            credentials = "Basic " + window.btoa(`${userid}:${email}:${password}`)
+            let username = emailLogin.value
+            let password = passwordLogin.value
+
+            credentials = "Basic " + window.btoa(`${username}:${password}`)
 
             let config = {
-                method: "POST",
+                method: "GET",
                 headers: {
                     "content-type": "application/json",
                     "authorization": credentials
@@ -81,14 +87,14 @@
             }
 
             let body = {
-                userid: emailInput.value,
-                email: emailInput.value,
+                username: emailInput.value,
                 password: passwordInput.value
             }
             let config = {
                 method: "POST",
                 headers: {
-                    "content-type": "application/json"
+                    "content-type": "application/json",
+                    "authorization": credentials
                 },
                 body: JSON.stringify(body)
             }
