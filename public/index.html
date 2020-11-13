@@ -68,6 +68,7 @@
             fetch(`/user`, config).then(resp => {
                 console.log(resp.status);
             })
+            
 
         
         }
@@ -82,7 +83,7 @@
         document.getElementById("createBTN").onclick = function (evt) {
 
             if (emailInput.value.length < 3 && passwordInput.value.length < 3) {
-                alert("NEII!!!!");
+                alert("At least 3 characters.");
                 return
             }
 

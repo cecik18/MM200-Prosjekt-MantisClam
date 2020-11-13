@@ -13,7 +13,6 @@ class User {
         this.password = crypto.createHmac('sha256', secret) //her krypteres passord, secret må stemme for å dekryptere
             .update(password)
             .digest('hex');
-        this.valid = false
     }
 
     async create() {

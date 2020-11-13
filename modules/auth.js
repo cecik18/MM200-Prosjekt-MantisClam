@@ -23,7 +23,7 @@ const authenticator = (req, res, next) => {
             let respons = await database.retrieveUser(username, password);  
             console.log(respons);
             if(respons.username === username && respons.password === password) {
-                return {username: username, password: password};
+                return {username, password} ;
             }
             return null;
 
