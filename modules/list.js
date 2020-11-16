@@ -1,5 +1,4 @@
-const { use } = require("./secureEndpoints");
-const database = require("./storagehandler")
+const database = require("./storagehandler");
 
 class List {
     constructor(listTitle, listCont, userid) {

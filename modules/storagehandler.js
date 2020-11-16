@@ -68,21 +68,23 @@ class StorageHandler {
     //Sletter bruker fra db
     async deleteUser(userid, username) {
         const client = new pg.Client(this.credentials);
-        let deletion = null;
+        let results = null;
         try {
             await client.connect();
             deletion = await client.query('DELETE FROM "Users" WHERE userid=$1 AND username=$2;', [userid, username]);
+            results = results.rows[0];
             client.end();
         } catch (err) {
             client.end();
+            results = err;
         }
 
-        return;
+        return results;
     }
 
     //legger inn listeinfo
     async insertList(listTitle, listCont, userid) {
-         const client = new pg.Client(this.credentials);
+        const client = new pg.Client(this.credentials);
         let results = null;
         try {
             await client.connect();
@@ -105,7 +107,7 @@ class StorageHandler {
         try {
             await client.connect();
             results = await client.query('SELECT * FROM "Lists" WHERE userid=$1;', [userid]);
-            results = results.rows[0];
+            results = results.rows;
             client.end();
         } catch (err) {
             client.end();

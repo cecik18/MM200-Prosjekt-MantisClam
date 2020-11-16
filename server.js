@@ -8,7 +8,7 @@ const db = require("./modules/storagehandler");
 const {
     Router
   } = require('express');
-const secret = process.env.hashSecret || require("./localenv").hashSecret;
+const secret = process.env.hashKey || require("./localenv").hashKey;
 const {
   encrypt,
   decrypt
@@ -47,6 +47,7 @@ server.get("/user", auth, async function (req, res) {
 //sletter bruker
 server.post("/deleteUser", async function (req, res) {
   let deletion = await db.deleteUser(req.body.userid, req.body.username)
+  console.log(deletion);
   res.status(200).json(deletion).end();
   console.log("Deleted");
 });
@@ -58,6 +59,7 @@ server.post("/list", async function (req, res) {
   let cipherTitle = encrypt(listTitle, secret);
   let listCont = req.body.listCont;
   let cipherCont = encrypt(listCont, secret);
+  console.log(cipherTitle, cipherCont)
 
   let userid = req.body.userid;
 
@@ -69,12 +71,18 @@ server.post("/list", async function (req, res) {
 });
 
 //Henter liste fra db
-server.get("/list", async function (req, res) {
-    let cipherList = await db.retrieveList(req.body.userid);
-    cipherList.listTitle = decrypt(cipherList.listTitle, secret);
-    cipherList.listCont = decrypt(cipherList.listCont, secret);
-    res.status(200).json(cipherList).end();
+server.get("/list/:userid/", async function (req, res) {
+    let cipherList = await db.retrieveList(req.params.userid);
+    console.log(req.params.userid);
     console.log(cipherList);
+    let listItems = [];
+    for (let list of cipherList) {
+        let title = decrypt(list.listtitle, secret);
+        let cont = decrypt(list.listcont, secret);
+        listItems.push({listtitle: title, listcont: cont});
+    }
+    console.log(listItems);
+    res.status(200).json(listItems).end();
 });
 
 

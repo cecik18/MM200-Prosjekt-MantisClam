@@ -57,7 +57,7 @@
             let body = {
                 listTitle: listTitle,
                 listCont: listCont,
-                userid: userData.userid()
+                userid: userData.userid
             }
             let config = {
                 method: "POST",
@@ -77,6 +77,8 @@
         document.getElementById("updateListButton").onclick = async function (evt) {
             try {
 
+            let userid = userData.userid;
+
             let config = {
                 method: "GET",
                 headers: {
@@ -85,7 +87,7 @@
                 }
             }
 
-                let response = await fetch(`/list`, config)
+                let response = await fetch(`/list/${userid}`, config)
                 console.log(response.status);
                 let data = await response.json();
                 console.log(data);
@@ -104,6 +106,7 @@
         document.getElementById("signOutButton").onclick = function (evt) {
           
             sessionStorage.removeItem("userData");
+            sessionStorage.removeItem("listData");
 
             location.href = "index.html";
         }
@@ -131,11 +134,13 @@
                 },
                 body: JSON.stringify(body)
             }
+            console.log(config);
 
             fetch("/deleteUser", config).then(resp => {
                 console.log(resp.status);
             })
             sessionStorage.removeItem("userData");
+            sessionStorage.removeItem("listData");
             location.href="index.html"
         }
 
