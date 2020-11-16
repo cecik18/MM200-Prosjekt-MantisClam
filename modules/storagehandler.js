@@ -68,18 +68,17 @@ class StorageHandler {
     //Sletter bruker fra db
     async deleteUser(userid, username) {
         const client = new pg.Client(this.credentials);
-        let results = null;
+        let deletion = null;
         try {
             await client.connect();
             deletion = await client.query('DELETE FROM "Users" WHERE userid=$1 AND username=$2;', [userid, username]);
-            results = results.rows[0];
+            deletion = await client.query('DELETE FROM "Lists" WHERE userid=$1;', [userid]);
             client.end();
         } catch (err) {
             client.end();
-            results = err;
         }
 
-        return results;
+        return;
     }
 
     //legger inn listeinfo
@@ -111,6 +110,24 @@ class StorageHandler {
             client.end();
         } catch (err) {
             client.end();
+            results = err;
+        }
+
+        return results;
+    }
+
+     //Oppdaterer list content
+    async updateContent(listid, userid, listCont) {
+        const client = new pg.Client(this.credentials);
+        let results = null;
+        try {
+            await client.connect();
+            results = await client.query('UPDATE "Lists" SET listcont=$3 WHERE listid=$1 AND userid=$2;', [listid, userid, listCont]);
+            results = results.rows[0];
+            client.end();
+        } catch (err) {
+            client.end();
+            console.log(err);
             results = err;
         }
 

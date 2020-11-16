@@ -11,7 +11,7 @@
 
   <div class="grid-container">
     <div id="taskPlannerMenu">
-      <button id="previousPageButton">Return</button>
+      <button onclick="returnHome()" id="previousPageButton">Return</button>
       <button id="signOutButton">Sign out</button>
       <button id="deleteUserButton">Delete user</button>
     </div>
@@ -49,10 +49,26 @@
   
   // Array of items
 
+  //STIAN_________________________________________________________________________________________________________________________________________________________
+        //henter fra sessionstorage
+        let jsontext = sessionStorage.getItem("userData");
+        let userData = JSON.parse(jsontext);
+        console.log(userData);
+        let credentials = null;
+
+        //henter fra sessionstorage
+        jsontext = sessionStorage.getItem("listData");
+        let listData = JSON.parse(jsontext);
+        console.log(listData);
+
+        let newListItemInput = document.getElementById("newListItemInput");
+    // ________________________________________________________________________________________________________________________________________________________
+
 
 
   // Create a new list item
   function NewListItem() {
+    updateListCont();
     let li = document.createElement("li");
     let inputValue = document.getElementById("newListItemInput").value;
     let t = document.createTextNode(inputValue);
@@ -83,6 +99,91 @@
 
   };
 
+  //STIAN______________________________________________________________________________________________________________________________________
+  async function updateListCont() {
+      let listCont = newListItemInput.value;
+      let listid = listData[0].listid; //her må endres når det funker å lage legge inn lister på klientsiden
+      console.log(listid)
+            try {
+                
+            
+            let body = {
+                userid: userData.userid,
+                listid:  listid,
+                listCont: listCont
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/listUpdate", config).then(resp => {
+                console.log(resp.status);
+            })
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        
+        //sign out------------------------------------------------------------------------------------------------------------
+        document.getElementById("signOutButton").onclick = function (evt) {
+          
+            sessionStorage.removeItem("userData");
+            sessionStorage.removeItem("listData");
+
+            location.href = "index.html";
+        }
+        //-------------------------------------------------------------------------------------------------------------
+
+        //Delete user
+        document.getElementById("deleteUserButton").onclick = async function (evt) {
+
+        try {
+      
+        let confirmation = prompt('Confirm action by typing: "DELETE USER"');
+        console.log(confirmation);
+
+        if (confirmation === "DELETE USER") {
+          
+          let body = {
+                username: userData.username,
+                userid: userData.userid
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+            console.log(config);
+
+            fetch("/deleteUser", config).then(resp => {
+                console.log(resp.status);
+            })
+            sessionStorage.removeItem("userData");
+            sessionStorage.removeItem("listData");
+            location.href="index.html"
+        }
+
+        } catch (error) {
+            console.error(error)
+        }
+      }
+        
+      function returnHome() {
+          location.href="page2_Cecilia_Versjon4.html";
+      }
+
+
+//__________________________________________________________________________________________________________________________________________________________
 
 
 

@@ -77,14 +77,23 @@ server.get("/list/:userid/", async function (req, res) {
     console.log(cipherList);
     let listItems = [];
     for (let list of cipherList) {
+        let listid = list.listid;
+        let userid = list.userid;
         let title = decrypt(list.listtitle, secret);
         let cont = decrypt(list.listcont, secret);
-        listItems.push({listtitle: title, listcont: cont});
+        listItems.push({listid: listid, userid: userid, listtitle: title, listcont: cont});
     }
     console.log(listItems);
     res.status(200).json(listItems).end();
 });
 
+//
+server.post("/listUpdate", async function (req, res) {
+    let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret))
+    console.log(req.body);
+    console.log(content)
+    res.status(200).json(content).end();
+});
 
 server.listen(server.get('port'), function () {
   console.log('server running', server.get('port'));
