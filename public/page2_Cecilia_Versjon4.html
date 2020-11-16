@@ -29,46 +29,73 @@
       <button class="updateListButton">Update</button>
     </div>
 
-    <div class="allLists">
-      <p>Shopping</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
-
-    <div class="allLists">
-      <p>Hei</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
-
-    <div class="allLists">
-      <p>Dette må jeg huske</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
-
-    <div class="allLists">
-      <p>Sangtitler</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
-
-    <div class="allLists">
-      <p>Handleliste for uka</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
-
-    <div class="allLists">
-      <p>Huskeliste flytur</p>
-      <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
-    </div>
 
 
   </div>
 
 </body>
 
+<script>
+
+        //henter fra sessionstorage
+        let jsontext = sessionStorage.getItem("userData");
+        let userData = JSON.parse(jsontext);
+        console.log(userData);
+        let credentials = null;
+
+        //"hindrer" forbipassering av login (aka skrive inn url selv)
+        if(!userData) {
+          location.href = "index.html"
+        }
+
+        //sign out------------------------------------------------------------------------------------------------------------
+        document.getElementById("signOutButton").onclick = function (evt) {
+          
+            sessionStorage.removeItem("userData");
+
+            location.href = "index.html";
+        }
+        //-------------------------------------------------------------------------------------------------------------
+
+        //Delete user
+        document.getElementById("deleteUserButton").onclick = async function (evt) {
+
+        try {
+      
+        let confirmation = prompt('Confirm deletion with: "DELETE USER"');
+        console.log(confirmation);
+
+        if (confirmation === "DELETE USER") {
+          
+          let body = {
+                username: userData.username,
+                userid: userData.userid
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/deleteUser", config).then(resp => {
+                console.log(resp.status);
+            })
+            sessionStorage.removeItem("userData");
+            location.href="index.html"
+        }
+
+        } catch (error) {
+            console.error(error)
+        }
+      }
+        
+            
+        
+    
+
+</script>
 
 </html>

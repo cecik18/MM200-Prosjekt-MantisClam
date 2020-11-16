@@ -45,17 +45,22 @@
         const emailLogin = document.getElementById("loginEmail");
         const passwordLogin = document.getElementById("loginPassword");
 
-       let credentials = null;
+        let credentials = null;
 
        loginForm.onsubmit = submit;
 
-        function submit (evt) {
+        async function submit (evt) {
+
+            try {
+        
+            //Hindrer form fra å submittes
             evt.preventDefault();
 
             let username = emailLogin.value
             let password = passwordLogin.value
 
-            credentials = "Basic " + window.btoa(`${username}:${password}`)
+            //Brukernavn og passord blir omkodet til noe annet
+            credentials = "Basic " + window.btoa(`${username}:${password}`) 
 
             let config = {
                 method: "GET",
@@ -65,12 +70,21 @@
                 }
             }
 
-            fetch(`/user`, config).then(resp => {
-                console.log(resp.status);
-            })
-            
+            //Lagrer userid og går til page 2 om login blir godkjent
+                let response = await fetch(`/user`, config)
+                console.log(response.status);
+                let data = await response.json();
+                console.log(data);
 
-        
+                //lagrer data i sessionstorage (sessionstorage fungerer likt som localstorage, men dataen blir slettet etter nettleser lukkes)
+                let jsontext = JSON.stringify(data);
+                sessionStorage.setItem("userData", jsontext);
+
+                location.href="page2_Cecilia_Versjon4.html"
+            
+            } catch (error) {
+                console.error(error)
+            }
         }
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -81,6 +95,8 @@
         const passwordInput = document.getElementById("createPassword");
 
         document.getElementById("createBTN").onclick = function (evt) {
+            
+            evt.preventDefault();
 
             if (emailInput.value.length < 3 && passwordInput.value.length < 3) {
                 alert("At least 3 characters.");
@@ -102,14 +118,15 @@
 
             fetch("/user", config).then(resp => {
                 console.log(resp.status);
+                if (resp.status === 409){
+                    alert("User already exists!")
+                }
             })
 
 
         }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 </script>
 
