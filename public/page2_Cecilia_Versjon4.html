@@ -26,7 +26,7 @@
     <div class="allLists">
       <p>Hyttetur</p>
       <button class="deleteListButton">Delete</button>
-      <button class="updateListButton">Update</button>
+      <button id="updateListButton" class="updateListButton">Update</button>
     </div>
 
 
@@ -47,6 +47,58 @@
         if(!userData) {
           location.href = "index.html"
         }
+
+        //temp list items -------------------------------------------------------------------------------------------------------
+        let listTitle = "List Title";
+        let listCont = "List Content";
+
+        //legg til
+        document.getElementById("addNewListButton").onclick = function (evt) {
+            let body = {
+                listTitle: listTitle,
+                listCont: listCont,
+                userid: userData.userid()
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/list", config).then(resp => {
+                console.log(resp.status);
+            })
+        }
+
+        //hent ned
+        document.getElementById("updateListButton").onclick = async function (evt) {
+            try {
+
+            let config = {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                }
+            }
+
+                let response = await fetch(`/list`, config)
+                console.log(response.status);
+                let data = await response.json();
+                console.log(data);
+
+                let jsontext = JSON.stringify(data);
+                sessionStorage.setItem("listData", jsontext);
+            
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        //---------------------------------------------------------------------------------------------------------------------------------
 
         //sign out------------------------------------------------------------------------------------------------------------
         document.getElementById("signOutButton").onclick = function (evt) {

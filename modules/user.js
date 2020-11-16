@@ -16,7 +16,7 @@ class User {
         this.valid = false;
     }
 
-    async create() {
+    async createUser() {
         try {
             let respons = await database.insertUser(this.username, this.password);
             return respons;
@@ -34,9 +34,5 @@ class User {
         }
     } */
 }
-
-    
-
-
 
 module.exports = User

@@ -2,11 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const secureEndpoints = require("./modules/secureEndpoints")
 const User = require("./modules/user")
+const List = require("./modules/list")
 const auth = require("./modules/auth");
 const db = require("./modules/storagehandler");
 const {
     Router
   } = require('express');
+const secret = process.env.hashSecret || require("./localenv").hashSecret;
+const {
+  encrypt,
+  decrypt
+} = require("./modules/cesarcipher");
 
 const server = express();
 const port = (process.env.PORT || 8080);
@@ -23,7 +29,7 @@ server.post("/user", async function (req, res) {
   const newUser = new User(req.body.username, req.body.password);
   let check = await db.retrieveUsername(newUser.username);
   if(!check) {
-  await newUser.create();
+  await newUser.createUser();
     res.status(200).json(newUser).end();
     console.log("User created")
   } else {
@@ -43,6 +49,32 @@ server.post("/deleteUser", async function (req, res) {
   let deletion = await db.deleteUser(req.body.userid, req.body.username)
   res.status(200).json(deletion).end();
   console.log("Deleted");
+});
+
+//sender ny liste til db
+server.post("/list", async function (req, res) {
+
+  let listTitle = req.body.listTitle;
+  let cipherTitle = encrypt(listTitle, secret);
+  let listCont = req.body.listCont;
+  let cipherCont = encrypt(listCont, secret);
+
+  let userid = req.body.userid;
+
+  let newList = new List(cipherTitle, cipherCont, userid);
+
+  let creation = await newList.createList();
+    res.status(200).json(creation).end();
+    console.log("List created")
+});
+
+//Henter liste fra db
+server.get("/list", async function (req, res) {
+    let cipherList = await db.retrieveList(req.body.userid);
+    cipherList.listTitle = decrypt(cipherList.listTitle, secret);
+    cipherList.listCont = decrypt(cipherList.listCont, secret);
+    res.status(200).json(cipherList).end();
+    console.log(cipherList);
 });
 
 

@@ -68,10 +68,43 @@ class StorageHandler {
     //Sletter bruker fra db
     async deleteUser(userid, username) {
         const client = new pg.Client(this.credentials);
+        let deletion = null;
+        try {
+            await client.connect();
+            deletion = await client.query('DELETE FROM "Users" WHERE userid=$1 AND username=$2;', [userid, username]);
+            client.end();
+        } catch (err) {
+            client.end();
+        }
+
+        return;
+    }
+
+    //legger inn listeinfo
+    async insertList(listTitle, listCont, userid) {
+         const client = new pg.Client(this.credentials);
         let results = null;
         try {
             await client.connect();
-            results = await client.query('DELETE FROM "Users" WHERE userid=$1 AND username=$2;', [userid, username]);
+            results = await client.query('INSERT INTO "Lists"("listtitle", "listcont", "userid") VALUES($1, $2, $3) RETURNING *;', [listTitle, listCont, userid]);
+            results = results.rows[0];
+            client.end();
+        } catch (err) {
+            client.end();
+            console.log(err);
+            results = err;
+        }
+
+        return results;
+    }
+
+    //henter liste
+    async retrieveList(userid) {
+        const client = new pg.Client(this.credentials);
+        let results = null;
+        try {
+            await client.connect();
+            results = await client.query('SELECT * FROM "Lists" WHERE userid=$1;', [userid]);
             results = results.rows[0];
             client.end();
         } catch (err) {
