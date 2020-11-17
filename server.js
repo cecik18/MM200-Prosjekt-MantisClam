@@ -57,13 +57,11 @@ server.post("/list", async function (req, res) {
 
   let listTitle = req.body.listTitle;
   let cipherTitle = encrypt(listTitle, secret);
-  let listCont = req.body.listCont;
-  let cipherCont = encrypt(listCont, secret);
-  console.log(cipherTitle, cipherCont)
+  console.log(cipherTitle)
 
   let userid = req.body.userid;
 
-  let newList = new List(cipherTitle, cipherCont, userid);
+  let newList = new List(cipherTitle, userid);
 
   let creation = await newList.createList();
     res.status(200).json(creation).end();
@@ -80,8 +78,7 @@ server.get("/list/:userid/", async function (req, res) {
         let listid = list.listid;
         let userid = list.userid;
         let title = decrypt(list.listtitle, secret);
-        let cont = decrypt(list.listcont, secret);
-        listItems.push({listid: listid, userid: userid, listtitle: title, listcont: cont});
+        listItems.push({listid: listid, userid: userid, listtitle: title});
     }
     console.log(listItems);
     res.status(200).json(listItems).end();
@@ -89,11 +86,24 @@ server.get("/list/:userid/", async function (req, res) {
 
 //
 server.post("/listUpdate", async function (req, res) {
-    let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret))
+    let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret));
     console.log(req.body);
     console.log(content)
     res.status(200).json(content).end();
 });
+
+server.get("/listUpdate/:listid/:userid/", async function (req, res) {
+    let cipherItem = await db.retrieveListItems(req.params.listid, req.params.userid)
+    console.log(cipherItem)
+    let Items = [];
+    for (let list of cipherItem) {
+        let listid = list.listid;
+        let userid = list.userid;
+        let cont = decrypt(list.listCont, secret);
+        Items.push({listid: listid, userid: userid, listCont: cont});
+    }
+    res.status(200).json(Items).end();
+})
 
 server.listen(server.get('port'), function () {
   console.log('server running', server.get('port'));

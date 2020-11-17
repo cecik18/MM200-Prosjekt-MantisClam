@@ -31,13 +31,6 @@
   
     <div id="allYourListItems">
       <ul id="listOfListItems">
-      
-      <!-- <template id="TemplateListItems"> -->
-        <li>
-        <div id="ListItem" > empty </div> 
-        <button onclick="DeleteListItem()" class="deleteListItemButton">Delete list item</button> 
-        </li>
-      <!-- </template> -->
 
       </ul>
     </div>
@@ -50,6 +43,8 @@
   // Array of items
 
   //STIAN_________________________________________________________________________________________________________________________________________________________
+
+    
         //henter fra sessionstorage
         let jsontext = sessionStorage.getItem("userData");
         let userData = JSON.parse(jsontext);
@@ -60,18 +55,29 @@
         jsontext = sessionStorage.getItem("listData");
         let listData = JSON.parse(jsontext);
         console.log(listData);
-
+  
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
 
 
 
+// Click on a close button to hide the current list item
+var close = document.getElementsByClassName("deleteListItemButton");
+var i;
+for (i = 0; i < close.length; i++) {
+  close[i].onclick = function() {
+    var div = this.parentElement;
+    div.style.display = "none";
+  }
+}
+
   // Create a new list item
   function NewListItem() {
-    updateListCont();
     let li = document.createElement("li");
     let inputValue = document.getElementById("newListItemInput").value;
     let t = document.createTextNode(inputValue);
+    let htmlDelete = '<button class="deleteListItemButton">Delete list item</button>';
+    li.innerHTML = htmlDelete;
     li.appendChild(t);
     if (inputValue === '') {
       alert("You should write an item");
@@ -93,11 +99,6 @@
       }
     }
   }
-  // Delete a list item  when clicking on the "Delete list item" button
-  function DeleteListItem() {
-    alert("test:" +"Delete list item")
-
-  };
 
   //STIAN______________________________________________________________________________________________________________________________________
   async function updateListCont() {
@@ -136,6 +137,7 @@
           
             sessionStorage.removeItem("userData");
             sessionStorage.removeItem("listData");
+            sessionStorage.removeItem("itemData");
 
             location.href = "index.html";
         }
@@ -170,6 +172,7 @@
             })
             sessionStorage.removeItem("userData");
             sessionStorage.removeItem("listData");
+            sessionStorage.removeItem("itemData");
             location.href="index.html"
         }
 
