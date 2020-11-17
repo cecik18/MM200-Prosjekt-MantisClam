@@ -86,9 +86,11 @@ server.get("/list/:userid/", async function (req, res) {
 
 //
 server.post("/listUpdate", async function (req, res) {
+    let cleanse = await db.removeUnwanted(req.body.listid, req.body.userid);
     let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret));
     console.log(req.body);
     console.log(content)
+    console.log(cleanse)
     res.status(200).json(content).end();
 });
 
@@ -97,10 +99,11 @@ server.get("/listUpdate/:listid/:userid/", async function (req, res) {
     console.log(cipherItem)
     let Items = [];
     for (let list of cipherItem) {
+        let contid = list.contentid;
         let listid = list.listid;
         let userid = list.userid;
-        let cont = decrypt(list.listCont, secret);
-        Items.push({listid: listid, userid: userid, listCont: cont});
+        let cont = decrypt(list.listcont, secret);
+        Items.push({contentid: contid, listid: listid, userid: userid, listCont: cont});
     }
     res.status(200).json(Items).end();
 })

@@ -11,8 +11,9 @@
 
   <div class="grid-container">
     <div id="taskPlannerMenu">
-      <button id="signOutButton">Sign out</button>
-      <button id="deleteUserButton">Delete user</button>
+        <button onclick="returnHome()" id="previousPageButton">Return</button>
+        <button id="signOutButton">Sign out</button>
+        <button id="deleteUserButton">Delete user</button>
     </div>
     <div id="taskPlannerHeader_page3">
       <p id="headerTitle">MantisClam Taskplanner</p>
@@ -32,6 +33,9 @@
   
     <div id="allYourListItems">
       <ul id="listOfListItems">
+          <div id="loadedItems">
+              
+          </div>
 
       </ul>
     </div>
@@ -56,6 +60,11 @@
         jsontext = sessionStorage.getItem("listData");
         let listData = JSON.parse(jsontext);
         console.log(listData);
+
+        //henter fra sessionstorage
+        jsontext = sessionStorage.getItem("itemData");
+        let itemData = JSON.parse(jsontext);
+        console.log(itemData);
   
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
@@ -108,21 +117,97 @@
         let jsontext = JSON.stringify(tasks);
         sessionStorage.setItem("itemData", jsontext);
 
+        updateListCont();
+
         location.href="page2_Cecilia_Versjon4.html";
+  }
+
+  
+  storedItems();
+  async function storedItems() {
+            try{
+
+            jsontext = sessionStorage.getItem("itemData");
+            itemData = JSON.parse(jsontext);
+            console.log(itemData);
+            let items = itemData;
+
+            for (let item of items) {
+
+            let li = document.createElement("li");
+            let inputValue = item.listCont;
+            let t = document.createTextNode(inputValue);
+            let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>'; 
+            li.innerHTML = htmlDelete;      
+            li.appendChild(t);
+            document.getElementById("listOfListItems").appendChild(li);
+            tasks.push({listCont: inputValue});
+            console.log(tasks)
+            index++;
+            }
+  
+            var close = document.getElementsByClassName("deleteListItemButton");
+            for (i = 0; i < close.length; i++) {
+                let remove = [];
+              close[i].onclick = function(evt) {
+                let div = this.parentElement;
+                let target = evt.target.id;
+                tasks.splice(target, 1, "OBJECT DELETED");
+                console.log(tasks.length);
+                console.log(tasks);
+                index--;
+                div.style.display = "none";
+        }
+    }
+    return tasks;
+        } 
+    catch(err){
+        console.log(err);
+    }
+}
+
+
+  //legger ting allerede i db inn på appen
+  loadData();
+  async function loadData() {
+       try {
+
+            let userid = userData.userid;
+            let listid = listData[0].listid;
+
+            let config = {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                }
+            }
+
+                let response = await fetch(`/listUpdate/${listid}/${userid}`, config)
+                console.log(response.status);
+                let data = await response.json();
+                console.log(data);
+
+                let jsontext = JSON.stringify(data);
+                sessionStorage.setItem("itemData", jsontext);
+            
+            } catch (error) {
+                console.error(error)
+            }
   }
 
   //STIAN______________________________________________________________________________________________________________________________________
   async function updateListCont() {
-      let listCont = newListItemInput.value;
       let listid = listData[0].listid; //her må endres til å få listid fra page 2
+
       console.log(listid)
             try {
                 
-            
+            for (let item of itemData ) {
             let body = {
                 userid: userData.userid,
                 listid:  listid,
-                listCont: tasks
+                listCont: item.listCont
             }
             let config = {
                 method: "POST",
@@ -136,6 +221,8 @@
             fetch("/listUpdate", config).then(resp => {
                 console.log(resp.status);
             })
+
+        }
 
             } catch (error) {
                 console.error(error);
@@ -190,6 +277,10 @@
         } catch (error) {
             console.error(error)
         }
+      }
+
+      function returnHome() {
+          location.href="page2_Cecilia_Versjon4.html";
       }
 
 
