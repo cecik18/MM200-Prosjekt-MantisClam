@@ -101,11 +101,10 @@ server.get("/listUpdate/:listid/:userid/", async function (req, res) {
     console.log(cipherItem)
     let Items = [];
     for (let list of cipherItem) {
-        let contid = list.contentid;
         let listid = list.listid;
         let userid = list.userid;
         let cont = decrypt(list.listcont, secret);
-        Items.push({contentid: contid, listid: listid, userid: userid, listCont: cont});
+        Items.push({listid: listid, userid: userid, listCont: cont});
     }
     res.status(200).json(Items).end();
 })

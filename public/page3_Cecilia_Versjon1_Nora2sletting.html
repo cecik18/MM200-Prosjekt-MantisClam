@@ -11,8 +11,8 @@
 
   <div class="grid-container">
     <div id="taskPlannerMenu">
-        <button id="signOutButton">Sign out</button>
-        <button id="deleteUserButton">Delete user</button>
+      <button id="signOutButton">Sign out</button>
+      <button id="deleteUserButton">Delete user</button>
     </div>
     <div id="taskPlannerHeader_page3">
       <p id="headerTitle">MantisClam Taskplanner</p>
@@ -25,15 +25,13 @@
       <button id="addListItemButton">Add list item</button>
       -->
       <button onclick="NewListItem()" class="addListItemButton" id="addListItemButton">Add list item</button>
-      <button onclick="saveChanges()" class="saveButton">Save and exit</button>
+
+      <button onclick="saveChanges()" class="addListItemButton" id="addListItemButton">Save and exit</button>
 
     </div>
   
     <div id="allYourListItems">
       <ul id="listOfListItems">
-          <div id="loadedItems">
-              
-          </div>
 
       </ul>
     </div>
@@ -45,24 +43,26 @@
   
   // Array of items
 
+  // let TitleOfList = sessionStorage.getItem("titlOfList") // get this from page2 somehow
+    // Dummy for that:
+    let TitleOfList = "Title of List";
+    document.getElementById("titleOfList").innerHTML = TitleOfList;
+
+
   //STIAN_________________________________________________________________________________________________________________________________________________________
+
     
         //henter fra sessionstorage
         let jsontext = sessionStorage.getItem("userData");
         let userData = JSON.parse(jsontext);
-        console.log(userData);
+        console.log("From sessionstorage userdata: " + userData);
         let credentials = null;
 
         //henter fra sessionstorage
         jsontext = sessionStorage.getItem("listData");
         let listData = JSON.parse(jsontext);
-        console.log(listData);
-
-        //henter fra sessionstorage
-        jsontext = sessionStorage.getItem("itemData");
-        let itemData = JSON.parse(jsontext);
-        console.log(itemData);
-
+        console.log("From sessionstorage listData: " + listData);
+  
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
 
@@ -73,29 +73,35 @@
   // Create a new list item
   function NewListItem() {
     let li = document.createElement("li");
-    let inputValue = document.getElementById("newListItemInput").value;
-    let t = document.createTextNode(inputValue);
+    let newListItemValue = document.getElementById("newListItemInput").value;
+    let newTNode = document.createTextNode(newListItemValue);
     let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';  //legger til delete knapp
     li.innerHTML = htmlDelete;                                                          // ---------------------
-    li.appendChild(t);
-    if (inputValue === '') {
-      alert("You should write an item");
-    } else {
+    li.appendChild(newTNode);
+    if (newListItemValue === "") {              // input should'nt be ""
+      alert("Add list item: should't be empty");
+    } else if (newListItemValue === " ") {      // should't be " " either
+      alert('Add list item: should not be "blank"');
+   } else {
       document.getElementById("listOfListItems").appendChild(li);
-      tasks.push({listCont: inputValue});
-      console.log(tasks)
+      tasks.push({listCont: newListItemValue}); // add new item at the end of  list (tasks[])
+      console.log("tasks: " + tasks)
       index++;
     }
-    document.getElementById("newListItemInput").value = "";
+    document.getElementById("newListItemInput").value = ""; // delete content of input-field
   
-    var close = document.getElementsByClassName("deleteListItemButton");
+    let close = document.getElementsByClassName("deleteListItemButton");
     for (i = 0; i < close.length; i++) {
+      console.log("i:"+i);
       close[i].onclick = function(evt) {
+        console.log("close["+i+"]");
         let div = this.parentElement;
         let target = evt.target.id;
-        tasks.splice(target, 1, "OBJECT DELETED");
-        console.log(tasks.length);
-        console.log(tasks);
+        console.log("del-target: " + target)
+        tasks.splice(target, 1, "OBJECT DELETED");  // splice() replaces item with "OBJECT DELETED"
+          // this is to prevent messing up array-numbering of listitems and buttons  
+        console.log("tasks.length: " + tasks.length);
+        console.log("tasks2: " + tasks);
         index--;
         div.style.display = "none";
       }
@@ -103,132 +109,31 @@
     return tasks;
   }
 
-  //save and exit funksjon
-  async function saveChanges() {
-    try {
-  
+  function saveChanges() {
       let check = tasks.indexOf("OBJECT DELETED");
-      while (check > -1) {
+      while (check > -1) {    // this deletes all "OBJECT DELETE". Array gets resortet uten "hole". 
           tasks.splice(check, 1)
           check = tasks.indexOf("OBJECT DELETED");
       }
-
+console.log("tasks length on save:" + tasks.length);
         let jsontext = JSON.stringify(tasks);
         sessionStorage.setItem("itemData", jsontext);
 
-        let userid = userData.userid;
-        let config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-
-                response = await fetch(`/list/${userid}`, config)
-                console.log(response.status);
-                data = await response.json();
-                console.log(data);
-
-                jsontext = JSON.stringify(data);
-                sessionStorage.setItem("listData", jsontext);
-
-        updateListCont();
-
-        location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
-          
-    } catch (error) {
-      console.error(error)
-    }
+        location.href="page2_Cecilia_Versjon4.html";
   }
-
-  //Lager liste av db items
-  storedItems();
-  async function storedItems() {
-            try{
-
-            jsontext = sessionStorage.getItem("itemData");
-            itemData = JSON.parse(jsontext);
-            console.log(itemData);
-            let items = itemData;
-
-            for (let item of items) {
-
-            let li = document.createElement("li");
-            let inputValue = item.listCont;
-            let t = document.createTextNode(inputValue);
-            let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>'; 
-            li.innerHTML = htmlDelete;      
-            li.appendChild(t);
-            document.getElementById("listOfListItems").appendChild(li);
-            tasks.push({listCont: inputValue});
-            console.log(tasks)
-            index++;
-            }
-  
-            var close = document.getElementsByClassName("deleteListItemButton");
-            for (i = 0; i < close.length; i++) {
-              close[i].onclick = function(evt) {
-                let div = this.parentElement;
-                let target = evt.target.id;
-                tasks.splice(target, 1, "OBJECT DELETED");
-                console.log(tasks.length);
-                console.log(tasks);
-                index--;
-                div.style.display = "none";
-        }
-    }
-    return tasks;
-        } 
-    catch(err){
-        console.log(err);
-    }
-}
-
-
-  //legger ting allerede i db inn på appen
-   /* loadData();
-    async function loadData() {
-        try {
-
-            let userid = userData.userid;
-            let listid = listData.listid;
-
-            let config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-
-                let response = await fetch(`/listUpdate/${listid}/${userid}`, config)
-                console.log(response.status);
-                let data = await response.json();
-                console.log(data);
-
-                let jsontext = JSON.stringify(data);
-                sessionStorage.setItem("itemData", jsontext);
-            
-            } catch (error) {
-                console.error(error)
-            }
-  } */
 
   //STIAN______________________________________________________________________________________________________________________________________
   async function updateListCont() {
-        let listid = listData.listid; //her må endres til å få listid fra page 2
-        jsontext = sessionStorage.getItem("itemData");
-        itemData = JSON.parse(jsontext);
-
-      console.log(listid)
+      let listCont = newListItemInput.value;
+      let listid = listData[0].listid; //her må endres til å få listid fra page 2
+      console.log("listid: " + listid)
             try {
                 
-            for (let item of itemData ) {
+            
             let body = {
                 userid: userData.userid,
                 listid:  listid,
-                listCont: item.listCont
+                listCont: tasks
             }
             let config = {
                 method: "POST",
@@ -242,8 +147,6 @@
             fetch("/listUpdate", config).then(resp => {
                 console.log(resp.status);
             })
-
-        }
 
             } catch (error) {
                 console.error(error);
@@ -302,6 +205,7 @@
 
 
 //__________________________________________________________________________________________________________________________________________________________
+
 
 
 

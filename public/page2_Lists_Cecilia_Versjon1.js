@@ -25,6 +25,11 @@ addNewListButton.addEventListener('click', function (evt) {
 
 let lists = [];
 let index = 0;
+let lastElement;
+
+if (listData = null) {
+lastElement = listData[listData.length - 1].listid;
+}
 
 //Funksjon for å legge til en ny div når bruker trykker på "add" knappen
 function addNewListDiv() {
@@ -49,8 +54,9 @@ function addNewListDiv() {
         alert("You must give the list a title");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        let lastElement = lists[lists.length - 1]
-        lists.push({listid: lastElement.listid, userid: userData.userid, listtitle: titleOfListInput.value});
+        console.log(lastElement)
+        lists.push({listid: lastElement, userid: userData.userid, listtitle: titleOfListInput.value});
+        lastElement++;
         index++;
     }
 
@@ -78,7 +84,6 @@ function addNewListDiv() {
       }
 
         let jsontext = JSON.stringify(lists);
-        sessionStorage.removeItem("listData");
         sessionStorage.setItem("listData", jsontext);
 
         updateListCont();
@@ -117,18 +122,42 @@ function addNewListDiv() {
   }
 
 //Er litt usikker på hvordan dette skal gjøres videre
-function updateList (clicked_id) {
+async function updateList (clicked_id) {
 
-    //Finner id-en til update button som har blitt klikket på
-    let updateButtonId = clicked_id;
-    console.log(updateButtonId);
-    
-    jsontext = JSON.stringify(lists[clicked_id]);
-    sessionStorage.removeItem("listData");
+    jsontext = JSON.stringify(listData[clicked_id]);
     sessionStorage.setItem("listData", jsontext);
 
+    try {
+
+        let userid = userData.userid;
+        let listid = listData[clicked_id].listid;
+
+        let config = {
+            method: "GET",
+            headers: {
+                "content-type": "application/json",
+                "authorization": credentials
+            }
+        }
+
+            let response = await fetch(`/listUpdate/${listid}/${userid}`, config)
+            console.log(response.status);
+            let data = await response.json();
+            console.log(data);
+
+            let jsontext = JSON.stringify(data);
+            sessionStorage.setItem("itemData", jsontext);
+        
+        } catch (error) {
+            console.error(error)
+        }
+
+
+    //Finner id-en til update button som har blitt klikket på
+    console.log(clicked_id)
+
     //Denne skal nok endres på
-    window.location.href = "page3_Cecilia_Versjon1_Nora1.html";
+    location.href = "page3_Cecilia_Versjon1_Nora1.html";
 }
 
 storedItems();
