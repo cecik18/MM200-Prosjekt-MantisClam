@@ -26,8 +26,7 @@
       <button id="addListItemButton">Add list item</button>
       -->
       <button onclick="NewListItem()" class="addListItemButton" id="addListItemButton">Add list item</button>
-
-      <button onclick="saveChanges()" class="addListItemButton" id="addListItemButton">Save and exit</button>
+      <button onclick="saveChanges()" class="saveButton">Save and exit</button>
 
     </div>
   
@@ -92,7 +91,6 @@
   
     var close = document.getElementsByClassName("deleteListItemButton");
     for (i = 0; i < close.length; i++) {
-        let remove = [];
       close[i].onclick = function(evt) {
         let div = this.parentElement;
         let target = evt.target.id;
@@ -120,7 +118,7 @@
 
         updateListCont();
 
-        location.href="page2_Cecilia_Versjon4.html";
+        location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
   }
 
   //Lager liste av db items
@@ -149,7 +147,6 @@
   
             var close = document.getElementsByClassName("deleteListItemButton");
             for (i = 0; i < close.length; i++) {
-                let remove = [];
               close[i].onclick = function(evt) {
                 let div = this.parentElement;
                 let target = evt.target.id;
@@ -174,7 +171,7 @@
         try {
 
             let userid = userData.userid;
-            let listid = listData[0].listid;
+            let listid = listData.listid;
 
             let config = {
                 method: "GET",
@@ -199,7 +196,7 @@
 
   //STIAN______________________________________________________________________________________________________________________________________
   async function updateListCont() {
-        let listid = listData[0].listid; //her må endres til å få listid fra page 2
+        let listid = listData.listid; //her må endres til å få listid fra page 2
         jsontext = sessionStorage.getItem("itemData");
         itemData = JSON.parse(jsontext);
 
@@ -283,7 +280,7 @@
       }
 
       function returnHome() {
-          location.href="page2_Cecilia_Versjon4.html";
+          location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
       }
 
 

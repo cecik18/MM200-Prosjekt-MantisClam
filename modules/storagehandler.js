@@ -83,12 +83,12 @@ class StorageHandler {
     }
 
     //legger inn listeinfo
-    async insertList(listTitle, userid) {
+    async insertList(userid, listTitle) {
         const client = new pg.Client(this.credentials);
         let results = null;
         try {
             await client.connect();
-            results = await client.query('INSERT INTO "Lists"("listtitle", "userid") VALUES($1, $2) RETURNING *;', [listTitle, userid]);
+            results = await client.query('INSERT INTO "Lists"("userid", "listtitle") VALUES($1, $2) RETURNING *;', [userid, listTitle]);
             results = results.rows[0];
             client.end();
         } catch (err) {
@@ -136,12 +136,28 @@ class StorageHandler {
     }
 
      //Renser opp
-    async removeUnwanted(listid, userid) {
+    async removeUnwantedItems(listid, userid) {
         const client = new pg.Client(this.credentials);
         let deletion = null;
         try {
             await client.connect();
             deletion = await client.query('DELETE FROM "ListItems" WHERE listid=$1 AND userid=$2;', [listid, userid]);
+            client.end();
+        } catch (err) {
+            client.end();
+            console.log(err);
+        }
+
+        return;
+    }
+
+     //Renser opp
+    async removeUnwantedLists(userid) {
+        const client = new pg.Client(this.credentials);
+        let deletion = null;
+        try {
+            await client.connect();
+            deletion = await client.query('DELETE FROM "Lists" WHERE userid=$1;', [userid]);
             client.end();
         } catch (err) {
             client.end();
@@ -158,6 +174,23 @@ class StorageHandler {
         try {
             await client.connect();
             results = await client.query('SELECT * FROM "ListItems" WHERE listid=$1 AND userid=$2;', [listid, userid]);
+            results = results.rows;
+            client.end();
+        } catch (err) {
+            client.end();
+            results = err;
+        }
+
+        return results;
+    }
+
+    //sletter liste
+    async deleteList(listid, userid) {
+        const client = new pg.Client(this.credentials);
+        let results = null;
+        try {
+            await client.connect();
+            results = await client.query('DELETE FROM "Lists" WHERE listid=$1 AND userid=$2;', [listid, userid]);
             results = results.rows;
             client.end();
         } catch (err) {

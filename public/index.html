@@ -80,7 +80,23 @@
                 let jsontext = JSON.stringify(data);
                 sessionStorage.setItem("userData", jsontext);
 
-                location.href="page2_Cecilia_Versjon4.html"
+                
+                //henter fra sessionstorage
+                jsontext = sessionStorage.getItem("userData");
+                let userData = JSON.parse(jsontext);
+                console.log(userData);
+
+                let userid = userData.userid;
+
+                response = await fetch(`/list/${userid}`, config)
+                console.log(response.status);
+                data = await response.json();
+                console.log(data);
+
+                jsontext = JSON.stringify(data);
+                sessionStorage.setItem("listData", jsontext);
+
+                location.href="page2_Cecilia_Versjon4_AddAndDelete.html"
             
             } catch (error) {
                 console.error(error)
