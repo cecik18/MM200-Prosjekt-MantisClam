@@ -1,0 +1,4 @@
+userid i db stemmer ikke med userid til den som er logga inn
+
+det går ikke lage liste og trykke update ummidedlbart uten å først trykke save, for så logge ut og inn igjen. 
+listData undefined. clicked_id er undefined

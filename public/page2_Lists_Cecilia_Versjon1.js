@@ -25,11 +25,6 @@ addNewListButton.addEventListener('click', function (evt) {
 
 let lists = [];
 let index = 0;
-let lastElement;
-
-if (listData = null) {
-lastElement = listData[listData.length - 1].listid;
-}
 
 //Funksjon for å legge til en ny div når bruker trykker på "add" knappen
 function addNewListDiv() {
@@ -45,7 +40,7 @@ function addNewListDiv() {
     let html = `
     <p>${titleOfListInput.value}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Update</button>
+    <button id="${index}" class="updateListButton" onclick="updateNewList(this.id)">Update</button>
     `;
     newListDiv.innerHTML = html;
 
@@ -54,9 +49,10 @@ function addNewListDiv() {
         alert("You must give the list a title");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        console.log(lastElement)
-        lists.push({listid: lastElement, userid: userData.userid, listtitle: titleOfListInput.value});
-        lastElement++;
+        lists.push({userid: userData.userid, listtitle: titleOfListInput.value});
+        console.log(lists)
+        jsontext = JSON.stringify(lists);
+        sessionStorage.setItem("listData", jsontext);
         index++;
     }
 
@@ -68,13 +64,16 @@ function addNewListDiv() {
                 console.log(target);
                 lists.splice(target, 1, "OBJECT DELETED");
                 console.log(lists);
+                sessionStorage.removeItem("listData")
+                jsontext = JSON.stringify(lists);
+                sessionStorage.setItem("listData", jsontext);
                 div.style.display = "none";
             }
         }
         return lists;
 }
 
-//save and exit funksjon
+//save funksjon
   function saveChanges() {
       let check = lists.indexOf("OBJECT DELETED");
       while (check > -1) {
@@ -82,9 +81,6 @@ function addNewListDiv() {
         index--;
         check = lists.indexOf("OBJECT DELETED");
       }
-
-        let jsontext = JSON.stringify(lists);
-        sessionStorage.setItem("listData", jsontext);
 
         updateListCont();
   }
@@ -120,6 +116,26 @@ function addNewListDiv() {
           console.error(error)
       }
   }
+
+  function updateNewList (clicked_id) {
+
+
+    jsontext = JSON.stringify(lists);
+    sessionStorage.setItem("listData", jsontext);
+
+    jsontext = JSON.stringify(lists[clicked_id]);
+    sessionStorage.setItem("newList", jsontext);
+
+    jsontext = JSON.stringify(clicked_id);
+    sessionStorage.setItem("clickedID", jsontext);
+
+
+    //Finner id-en til update button som har blitt klikket på
+    console.log(clicked_id)
+
+    //Denne skal nok endres på
+    location.href = "page3_Cecilia_Versjon1_Nora1.html";
+}
 
 //Er litt usikker på hvordan dette skal gjøres videre
 async function updateList (clicked_id) {
@@ -198,6 +214,9 @@ async function storedItems() {
                 console.log(target);
                 lists.splice(target, 1, "OBJECT DELETED");
                 console.log(lists);
+                sessionStorage.removeItem("listData")
+                jsontext = JSON.stringify(lists);
+                sessionStorage.setItem("listData", jsontext);
                 div.style.display = "none";
             }
         }

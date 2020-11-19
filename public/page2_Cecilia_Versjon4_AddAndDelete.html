@@ -35,9 +35,7 @@
   //sign out------------------------------------------------------------------------------------------------------------
         document.getElementById("signOutButton").onclick = function (evt) {
           
-            sessionStorage.removeItem("userData");
-            sessionStorage.removeItem("listData");
-            sessionStorage.removeItem("itemData");
+            sessionStorage.clear();
 
             location.href = "index.html";
         }
@@ -70,9 +68,7 @@
             fetch("/deleteUser", config).then(resp => {
                 console.log(resp.status);
             })
-            sessionStorage.removeItem("userData");
-            sessionStorage.removeItem("listData");
-            sessionStorage.removeItem("itemData");
+            sessionStorage.clear();
             location.href="index.html"
         }
 

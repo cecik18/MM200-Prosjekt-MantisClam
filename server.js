@@ -70,6 +70,20 @@ server.post("/list", async function (req, res) {
     console.log("List created")
 });
 
+//sender ny liste til db (når den kommer fra page 3)
+server.post("/listNewlyAdded", async function (req, res) {
+  let userid = req.body.userid;
+  let listTitle = req.body.listtitle;
+  let cipherTitle = encrypt(listTitle, secret);
+  console.log(cipherTitle)
+
+  let newList = new List(userid, cipherTitle,);
+
+  let creation = await newList.createList();
+    res.status(200).json(creation).end();
+    console.log("List created")
+});
+
 //Henter liste fra db
 server.get("/list/:userid/", async function (req, res) {
     let cipherList = await db.retrieveList(req.params.userid);

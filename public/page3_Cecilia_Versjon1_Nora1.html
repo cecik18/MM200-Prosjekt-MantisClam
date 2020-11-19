@@ -59,6 +59,16 @@
         console.log(listData);
 
         //henter fra sessionstorage
+        jsontext = sessionStorage.getItem("newList");
+        let newList = JSON.parse(jsontext);
+        console.log(newList);
+
+        //henter fra sessionstorage
+        jsontext = sessionStorage.getItem("clickedID");
+        let clickedID = JSON.parse(jsontext);
+        console.log(clickedID);
+
+        //henter fra sessionstorage
         jsontext = sessionStorage.getItem("itemData");
         let itemData = JSON.parse(jsontext);
         console.log(itemData);
@@ -66,6 +76,9 @@
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
 
+    if (newList) {
+      updateListContFromNew();
+    }
 
     let tasks = [];
     let index = 0;
@@ -83,6 +96,8 @@
     } else {
       document.getElementById("listOfListItems").appendChild(li);
       tasks.push({listCont: inputValue});
+      jsontext = JSON.stringify(tasks);
+      sessionStorage.setItem("itemData", jsontext);
       console.log(tasks)
       index++;
     }
@@ -133,8 +148,12 @@
                 jsontext = JSON.stringify(data);
                 sessionStorage.setItem("listData", jsontext);
 
-        updateListCont();
+          updateListCont();
 
+        console.log(itemData)
+ 
+        sessionStorage.removeItem("newList");
+        sessionStorage.removeItem("itemData");
         location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
           
     } catch (error) {
@@ -217,7 +236,7 @@
 
   //STIAN______________________________________________________________________________________________________________________________________
   async function updateListCont() {
-        let listid = listData.listid; //her må endres til å få listid fra page 2
+        let listid = listData.listid; 
         jsontext = sessionStorage.getItem("itemData");
         itemData = JSON.parse(jsontext);
 
@@ -250,13 +269,53 @@
             }
         }
 
+  async function updateListContFromNew() {
+
+          try {
+            
+            let body = {
+                userid: newList.userid,
+                listtitle: newList.listtitle
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/listNewlyAdded", config).then(resp => {
+                console.log(resp.status);
+            })
+
+            let userid = userData.userid;
+
+                config = {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                }
+            }
+                response = await fetch(`/list/${userid}`, config)
+                console.log(response.status);
+                data = await response.json();
+                console.log(data);
+
+                jsontext = JSON.stringify(data);
+                sessionStorage.setItem("listData", jsontext);
+
+          } catch (error) {
+                console.error(error);
+            }
+          }
         
         //sign out------------------------------------------------------------------------------------------------------------
         document.getElementById("signOutButton").onclick = function (evt) {
           
-            sessionStorage.removeItem("userData");
-            sessionStorage.removeItem("listData");
-            sessionStorage.removeItem("itemData");
+            sessionStorage.clear();
 
             location.href = "index.html";
         }
@@ -289,9 +348,7 @@
             fetch("/deleteUser", config).then(resp => {
                 console.log(resp.status);
             })
-            sessionStorage.removeItem("userData");
-            sessionStorage.removeItem("listData");
-            sessionStorage.removeItem("itemData");
+            sessionStorage.clear();
             location.href="index.html"
         }
 
