@@ -2,7 +2,7 @@
 let addNewListButton = document.getElementById("addNewListButton");
 
 //henter fra sessionstorage
-jsontext = sessionStorage.getItem("userData");
+let jsontext = sessionStorage.getItem("userData");
 let userData = JSON.parse(jsontext);
 console.log(userData);
 
@@ -10,14 +10,50 @@ jsontext = sessionStorage.getItem("listData");
 let listData = JSON.parse(jsontext);
 console.log(listData);
 
-jsontext = sessionStorage.getItem("itemData");
-let itemData = JSON.parse(jsontext);
-console.log(itemData);
+
 
 
 let credentials = null;
 
+async function updateList(clicked_id) {
+    try {
+        
+    
 
+    let userid = userData.userid;
+
+    let config = {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+            "authorization": credentials
+        }
+    }
+                let response = await fetch(`/listUpdate/${userid}`, config)
+                console.log(response.status);
+                let data = await response.json();
+                console.log(data);
+
+                jsontext = JSON.stringify(data);
+                sessionStorage.setItem("itemData", jsontext);
+                
+                jsontext = sessionStorage.getItem("itemData");
+                let itemData = JSON.parse(jsontext);
+                console.log(itemData);
+                
+
+                //Finner id-en til update button som har blitt klikket på
+    console.log(clicked_id)
+
+    jsontext = JSON.stringify(clicked_id);
+    sessionStorage.setItem("clickedID", jsontext);
+
+    //Denne skal nok endres på
+    location.href = "page3_Cecilia_Versjon1_Nora1.html";
+} catch (error) {
+        console.error(error)
+}
+}
         
 
 addNewListButton.addEventListener('click', function (evt) {
@@ -45,7 +81,7 @@ function addNewListDiv() {
     let html = `
     <p>${titleOfListInput.value}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Update</button>
+    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">View</button>
     `;
     newListDiv.innerHTML = html;
 
@@ -114,6 +150,7 @@ function addNewListDiv() {
     
     jsontext = JSON.stringify(lists);
     sessionStorage.setItem("listData", jsontext);
+
 
     updateListTitle();
 
@@ -227,7 +264,7 @@ function addNewListDiv() {
 
 
 //Er litt usikker på hvordan dette skal gjøres videre
-function updateList (clicked_id) {
+/*function updateList (clicked_id) {
 
     //Finner id-en til update button som har blitt klikket på
     console.log(clicked_id)
@@ -237,7 +274,7 @@ function updateList (clicked_id) {
 
     //Denne skal nok endres på
     location.href = "page3_Cecilia_Versjon1_Nora1.html";
-}
+}*/
 
 storedItems();
 function storedItems() {
@@ -266,7 +303,7 @@ function storedItems() {
     let html = `
     <p>${list.listtitle}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Update</button>
+    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">View</button>
     `;
     newListDiv.innerHTML = html;
 

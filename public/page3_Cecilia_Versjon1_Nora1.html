@@ -114,19 +114,60 @@
 
   //save and exit funksjon
   function saveChanges() {
+
       let check = tasks.indexOf("OBJECT DELETED");
       while (check > -1) {
           tasks.splice(check, 1)
           check = tasks.indexOf("OBJECT DELETED");
       }
 
-      
+      if (tasks.length > 0) {
 
-        
-      sessionStorage.removeItem("clickedID");
-      location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
-    
+      for (let list of tasks) {
+            
+            let body = {
+                listid: listData[clickedID].listid,
+                userid: userData.userid,
+                listCont: list.listCont
+            }
+            console.log(body)
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/listUpdate", config).then(resp => {
+                console.log(resp.status);
+            })
+        }
+      } else {
+        let body = {
+                listid: listData[clickedID].listid,
+                userid: userData.userid
+            }
+            console.log(body)
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/deleteItems", config).then(resp => {
+                console.log(resp.status);
+            })
+      }
+
+        sessionStorage.removeItem("clickedID");
+        location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
   }
+
 
   //Lager liste av db items
   storedItems();

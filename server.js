@@ -124,8 +124,8 @@ server.get("/listUpdate/:userid/", async function (req, res) {
 })
 
 //sletter liste
-server.post("/deleteUser", async function (req, res) {
-  let deletion = await db.deleteList(req.body.listid, req.body.userid)
+server.post("/deleteItems", async function (req, res) {
+  let deletion = await db.removeUnwantedItems(req.body.listid, req.body.userid)
   console.log(deletion);
   res.status(200).json(deletion).end();
   console.log("Deleted");
