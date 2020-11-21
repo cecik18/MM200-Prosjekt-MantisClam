@@ -98,8 +98,14 @@ server.post("/listUpdate", async function (req, res) {
     res.status(200).json(content).end();
 });
 
-server.post("/cleanse", async function (req, res) {
+server.post("/cleanseItems", async function (req, res) {
   let cleanse = await db.removeAllUserItems(req.body.userid);
+  console.log(cleanse)
+  res.status(200).json(cleanse).end();
+});
+
+server.post("/cleanseLists", async function (req, res) {
+  let cleanse = await db.removeUnwantedLists(req.body.userid);
   console.log(cleanse)
   res.status(200).json(cleanse).end();
 });

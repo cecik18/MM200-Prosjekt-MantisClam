@@ -81,6 +81,8 @@ function addNewListDiv() {
 
                 let storage = [];
 
+                if (itemData) {
+
                 for(let i = 0; i < lists.length; i++){
                     for(let j = 0; j < itemData.length; j++){
                         if(lists[i].listid === itemData[j].listid) {
@@ -90,6 +92,7 @@ function addNewListDiv() {
                         }
                     }
                 }
+            }
 
                 sessionStorage.getItem("itemData")
 
@@ -125,6 +128,9 @@ function addNewListDiv() {
            listData = JSON.parse(jsontext);
            console.log(listData)
 
+           if (listData.length > 0) {
+            console.log("flere lists")
+
            for (let list of listData) {
             
             let body = {
@@ -143,9 +149,28 @@ function addNewListDiv() {
 
             fetch("/list", config).then(resp => {
                 console.log(resp.status);
+                })
+            }
+        } else {
+            console.log("tom")
+    
+            let body = {
+                userid: userData.userid
+            }
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/cleanseLists", config).then(resp => {
+                console.log(resp.status);
             })
-        }
   }
+}
 
   function updateListCont() {
            //legger nye lister inn i db -------------------------------------------------------------------------------------------------------
@@ -193,11 +218,11 @@ function addNewListDiv() {
                 body: JSON.stringify(body)
             }
 
-            fetch("/cleanse", config).then(resp => {
+            fetch("/cleanseItems", config).then(resp => {
                 console.log(resp.status);
             })
         }
-        
+     
   }
 
 
@@ -270,6 +295,8 @@ function storedItems() {
 
                 let storage = [];
 
+                if(itemData){
+
                 for(let i = 0; i < lists.length; i++){
                     for(let j = 0; j < itemData.length; j++){
                         if(lists[i].listid === itemData[j].listid) {
@@ -279,6 +306,7 @@ function storedItems() {
                         }
                     }
                 }
+            }
 
                 div.style.display = "none";
 

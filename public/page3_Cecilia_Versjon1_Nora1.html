@@ -71,30 +71,6 @@
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
 
-    async function getLists() {
-      try {
-         let userid = userData.userid;
-
-                config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-                response = await fetch(`/list/${userid}`, config)
-                console.log(response.status);
-                data = await response.json();
-                console.log(data);
-
-                jsontext = JSON.stringify(data);
-                sessionStorage.setItem("listData", jsontext);
-        
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
     let tasks = [];
     let index = 0;
 
