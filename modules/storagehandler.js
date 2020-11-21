@@ -151,6 +151,21 @@ class StorageHandler {
         return;
     }
 
+    async removeAllUnwantedItems(userid) {
+        const client = new pg.Client(this.credentials);
+        let deletion = null;
+        try {
+            await client.connect();
+            deletion = await client.query('DELETE FROM "ListItems" WHERE userid=$1;', [userid]);
+            client.end();
+        } catch (err) {
+            client.end();
+            console.log(err);
+        }
+
+        return;
+    }
+
     async removeAllUserItems(userid) {
         const client = new pg.Client(this.credentials);
         let deletion = null;

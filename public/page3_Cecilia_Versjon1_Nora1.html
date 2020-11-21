@@ -170,7 +170,11 @@
 
 
   //Lager liste av db items
-  storedItems();
+
+  if(listData.length > 0) {
+    storedItems();
+  }
+
   async function storedItems() {
             try{
 
