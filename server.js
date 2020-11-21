@@ -57,12 +57,13 @@ server.post("/list", async function (req, res) {
   
   let cleanse = await db.removeUnwantedLists(req.body.userid);
 
+  let listid = req.body.listid;
   let userid = req.body.userid;
   let listTitle = req.body.listtitle;
   let cipherTitle = encrypt(listTitle, secret);
   console.log(cipherTitle)
 
-  let newList = new List(userid, cipherTitle,);
+  let newList = new List(listid, userid, cipherTitle,);
 
   let creation = await newList.createList();
     res.status(200).json(creation).end();
@@ -70,19 +71,6 @@ server.post("/list", async function (req, res) {
     console.log("List created")
 });
 
-//sender ny liste til db (når den kommer fra page 3)
-server.post("/listNewlyAdded", async function (req, res) {
-  let userid = req.body.userid;
-  let listTitle = req.body.listtitle;
-  let cipherTitle = encrypt(listTitle, secret);
-  console.log(cipherTitle)
-
-  let newList = new List(userid, cipherTitle,);
-
-  let creation = await newList.createList();
-    res.status(200).json(creation).end();
-    console.log("List created")
-});
 
 //Henter liste fra db
 server.get("/list/:userid/", async function (req, res) {
@@ -110,8 +98,14 @@ server.post("/listUpdate", async function (req, res) {
     res.status(200).json(content).end();
 });
 
-server.get("/listUpdate/:listid/:userid/", async function (req, res) {
-    let cipherItem = await db.retrieveListItems(req.params.listid, req.params.userid)
+server.post("/cleanse", async function (req, res) {
+  let cleanse = await db.removeAllUserItems(req.body.userid);
+  console.log(cleanse)
+  res.status(200).json(cleanse).end();
+});
+
+server.get("/listUpdate/:userid/", async function (req, res) {
+    let cipherItem = await db.retrieveListItems(req.params.userid)
     console.log(cipherItem)
     let Items = [];
     for (let list of cipherItem) {

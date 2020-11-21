@@ -167,6 +167,18 @@ body{
     color: red;
 }
 
+.deleteNewListButton {
+    background-color: rgb(26, 106, 167);
+    color: white;
+}
+
+.deleteNewListButton:hover {
+    transition-duration: 0.6s;
+    background-color: white;
+    color: red;
+}
+
+
 .updateListButton {
     background-color: rgb(70, 156, 222);
     color: white;

@@ -59,11 +59,6 @@
         console.log(listData);
 
         //henter fra sessionstorage
-        jsontext = sessionStorage.getItem("newList");
-        let newList = JSON.parse(jsontext);
-        console.log(newList);
-
-        //henter fra sessionstorage
         jsontext = sessionStorage.getItem("clickedID");
         let clickedID = JSON.parse(jsontext);
         console.log(clickedID);
@@ -76,8 +71,28 @@
         let newListItemInput = document.getElementById("newListItemInput");
     // ________________________________________________________________________________________________________________________________________________________
 
-    if (newList) {
-      updateListContFromNew();
+    async function getLists() {
+      try {
+         let userid = userData.userid;
+
+                config = {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                }
+            }
+                response = await fetch(`/list/${userid}`, config)
+                console.log(response.status);
+                data = await response.json();
+                console.log(data);
+
+                jsontext = JSON.stringify(data);
+                sessionStorage.setItem("listData", jsontext);
+        
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     let tasks = [];
@@ -95,10 +110,13 @@
       alert("You should write an item");
     } else {
       document.getElementById("listOfListItems").appendChild(li);
-      tasks.push({listCont: inputValue});
-      jsontext = JSON.stringify(tasks);
+      tasks.push({listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue});
+      console.log(tasks);
+
+      let newsz = tasks.concat(itemData);
+      jsontext = JSON.stringify(newsz);
       sessionStorage.setItem("itemData", jsontext);
-      console.log(tasks)
+
       index++;
     }
     document.getElementById("newListItemInput").value = "";
@@ -111,7 +129,7 @@
         tasks.splice(target, 1, "OBJECT DELETED");
         console.log(tasks.length);
         console.log(tasks);
-        index--;
+
         div.style.display = "none";
       }
     }
@@ -119,46 +137,19 @@
   }
 
   //save and exit funksjon
-  async function saveChanges() {
-    try {
-  
+  function saveChanges() {
       let check = tasks.indexOf("OBJECT DELETED");
       while (check > -1) {
           tasks.splice(check, 1)
           check = tasks.indexOf("OBJECT DELETED");
       }
 
-        let jsontext = JSON.stringify(tasks);
-        sessionStorage.setItem("itemData", jsontext);
+      
 
-        let userid = userData.userid;
-        let config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-
-                response = await fetch(`/list/${userid}`, config)
-                console.log(response.status);
-                data = await response.json();
-                console.log(data);
-
-                jsontext = JSON.stringify(data);
-                sessionStorage.setItem("listData", jsontext);
-
-          updateListCont();
-
-        console.log(itemData)
- 
-        sessionStorage.removeItem("newList");
-        sessionStorage.removeItem("itemData");
-        location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
-          
-    } catch (error) {
-      console.error(error)
-    }
+        
+      sessionStorage.removeItem("clickedID");
+      location.href="page2_Cecilia_Versjon4_AddAndDelete.html";
+    
   }
 
   //Lager liste av db items
@@ -169,7 +160,15 @@
             jsontext = sessionStorage.getItem("itemData");
             itemData = JSON.parse(jsontext);
             console.log(itemData);
-            let items = itemData;
+
+            let storage = [];
+
+            for(let i = 0; i < itemData.length; i++){
+                        if(itemData[i].listid === listData[clickedID].listid) {
+                            storage.push(itemData[i])
+                        }
+                }
+            let items = storage;
 
             for (let item of items) {
 
@@ -180,9 +179,11 @@
             li.innerHTML = htmlDelete;      
             li.appendChild(t);
             document.getElementById("listOfListItems").appendChild(li);
-            tasks.push({listCont: inputValue});
+            tasks.push({listid: item.listid, userid: userData.userid, listCont: inputValue});
             console.log(tasks)
+
             index++;
+
             }
   
             var close = document.getElementsByClassName("deleteListItemButton");
@@ -193,7 +194,6 @@
                 tasks.splice(target, 1, "OBJECT DELETED");
                 console.log(tasks.length);
                 console.log(tasks);
-                index--;
                 div.style.display = "none";
         }
     }
@@ -204,113 +204,8 @@
     }
 }
 
-
-  //legger ting allerede i db inn på appen
-   /* loadData();
-    async function loadData() {
-        try {
-
-            let userid = userData.userid;
-            let listid = listData.listid;
-
-            let config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-
-                let response = await fetch(`/listUpdate/${listid}/${userid}`, config)
-                console.log(response.status);
-                let data = await response.json();
-                console.log(data);
-
-                let jsontext = JSON.stringify(data);
-                sessionStorage.setItem("itemData", jsontext);
-            
-            } catch (error) {
-                console.error(error)
-            }
-  } */
-
   //STIAN______________________________________________________________________________________________________________________________________
-  async function updateListCont() {
-        let listid = listData.listid; 
-        jsontext = sessionStorage.getItem("itemData");
-        itemData = JSON.parse(jsontext);
-
-      console.log(listid)
-            try {
-                
-            for (let item of itemData ) {
-            let body = {
-                userid: userData.userid,
-                listid:  listid,
-                listCont: item.listCont
-            }
-            let config = {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                },
-                body: JSON.stringify(body)
-            }
-
-            fetch("/listUpdate", config).then(resp => {
-                console.log(resp.status);
-            })
-
-        }
-
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-  async function updateListContFromNew() {
-
-          try {
-            
-            let body = {
-                userid: newList.userid,
-                listtitle: newList.listtitle
-            }
-            let config = {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                },
-                body: JSON.stringify(body)
-            }
-
-            fetch("/listNewlyAdded", config).then(resp => {
-                console.log(resp.status);
-            })
-
-            let userid = userData.userid;
-
-                config = {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                }
-            }
-                response = await fetch(`/list/${userid}`, config)
-                console.log(response.status);
-                data = await response.json();
-                console.log(data);
-
-                jsontext = JSON.stringify(data);
-                sessionStorage.setItem("listData", jsontext);
-
-          } catch (error) {
-                console.error(error);
-            }
-          }
+ 
         
         //sign out------------------------------------------------------------------------------------------------------------
         document.getElementById("signOutButton").onclick = function (evt) {

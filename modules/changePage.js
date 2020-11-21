@@ -1,0 +1,1 @@
+location.href = "../public/page2_Cecilia_Versjon4.html";

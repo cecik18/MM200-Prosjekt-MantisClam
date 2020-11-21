@@ -10,6 +10,10 @@ jsontext = sessionStorage.getItem("listData");
 let listData = JSON.parse(jsontext);
 console.log(listData);
 
+jsontext = sessionStorage.getItem("itemData");
+let itemData = JSON.parse(jsontext);
+console.log(itemData);
+
 
 let credentials = null;
 
@@ -32,6 +36,7 @@ function addNewListDiv() {
     //Lager en ny div
     let newListDiv = document.createElement('div');
     newListDiv.id = index;
+    newListDiv.listid = index + 1;
 
     //Denne legger til en "class" på div-en 
     newListDiv.classList.add("allLists");
@@ -40,7 +45,7 @@ function addNewListDiv() {
     let html = `
     <p>${titleOfListInput.value}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateNewList(this.id)">Update</button>
+    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Update</button>
     `;
     newListDiv.innerHTML = html;
 
@@ -49,7 +54,7 @@ function addNewListDiv() {
         alert("You must give the list a title");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({userid: userData.userid, listtitle: titleOfListInput.value});
+        lists.push({listid: index+1, userid: userData.userid, listtitle: titleOfListInput.value});
         console.log(lists)
         jsontext = JSON.stringify(lists);
         sessionStorage.setItem("listData", jsontext);
@@ -64,9 +69,30 @@ function addNewListDiv() {
                 console.log(target);
                 lists.splice(target, 1, "OBJECT DELETED");
                 console.log(lists);
+                
                 sessionStorage.removeItem("listData")
                 jsontext = JSON.stringify(lists);
                 sessionStorage.setItem("listData", jsontext);
+
+                jsontext = sessionStorage.getItem("itemData");
+                itemData = JSON.parse(jsontext);
+                console.log(itemData);
+                sessionStorage.removeItem("itemData")
+
+                let storage = [];
+
+                for(let i = 0; i < lists.length; i++){
+                    for(let j = 0; j < itemData.length; j++){
+                        if(lists[i].listid === itemData[j].listid) {
+                            storage.push(itemData[j])
+                            jsontext = JSON.stringify(storage);
+                            sessionStorage.setItem("itemData", jsontext);
+                        }
+                    }
+                }
+
+                sessionStorage.getItem("itemData")
+
                 div.style.display = "none";
             }
         }
@@ -75,27 +101,34 @@ function addNewListDiv() {
 
 //save funksjon
   function saveChanges() {
-      let check = lists.indexOf("OBJECT DELETED");
-      while (check > -1) {
+    
+    let check = lists.indexOf("OBJECT DELETED");
+    while (check > -1) {
         lists.splice(check, 1)
         index--;
         check = lists.indexOf("OBJECT DELETED");
-      }
+    }
+    
+    jsontext = JSON.stringify(lists);
+    sessionStorage.setItem("listData", jsontext);
 
-        updateListCont();
+    updateListTitle();
+
+    updateListCont();
+
   }
 
-  async function updateListCont() {
-      try {
+  function updateListTitle() {
            //legger nye lister inn i db -------------------------------------------------------------------------------------------------------
             
            jsontext = sessionStorage.getItem("listData");
            listData = JSON.parse(jsontext);
            console.log(listData)
 
-           for (let list of lists) {
+           for (let list of listData) {
             
             let body = {
+                listid: list.listid,
                 userid: list.userid,
                 listtitle: list.listtitle
             }
@@ -112,73 +145,80 @@ function addNewListDiv() {
                 console.log(resp.status);
             })
         }
-      } catch (error) {
-          console.error(error)
-      }
   }
 
-  function updateNewList (clicked_id) {
+  function updateListCont() {
+           //legger nye lister inn i db -------------------------------------------------------------------------------------------------------
+
+           jsontext = sessionStorage.getItem("itemData");
+           itemData = JSON.parse(jsontext);
+           console.log(itemData)
+
+           if(itemData){
+               console.log("flere items")
+                
+           for (let list of itemData) {
+            
+            let body = {
+                listid: list.listid,
+                userid: list.userid,
+                listCont: list.listCont
+            }
+            console.log(body)
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/listUpdate", config).then(resp => {
+                console.log(resp.status);
+            })
+        }
+     } else {
+        console.log("tom")
+            let body = {
+                userid: userData.userid
+            }
+            console.log(body)
+            let config = {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    "authorization": credentials
+                },
+                body: JSON.stringify(body)
+            }
+
+            fetch("/cleanse", config).then(resp => {
+                console.log(resp.status);
+            })
+        }
+        
+  }
 
 
-    jsontext = JSON.stringify(lists);
-    sessionStorage.setItem("listData", jsontext);
+//Er litt usikker på hvordan dette skal gjøres videre
+function updateList (clicked_id) {
 
-    jsontext = JSON.stringify(lists[clicked_id]);
-    sessionStorage.setItem("newList", jsontext);
+    //Finner id-en til update button som har blitt klikket på
+    console.log(clicked_id)
 
     jsontext = JSON.stringify(clicked_id);
     sessionStorage.setItem("clickedID", jsontext);
-
-
-    //Finner id-en til update button som har blitt klikket på
-    console.log(clicked_id)
-
-    //Denne skal nok endres på
-    location.href = "page3_Cecilia_Versjon1_Nora1.html";
-}
-
-//Er litt usikker på hvordan dette skal gjøres videre
-async function updateList (clicked_id) {
-
-    jsontext = JSON.stringify(listData[clicked_id]);
-    sessionStorage.setItem("listData", jsontext);
-
-    try {
-
-        let userid = userData.userid;
-        let listid = listData[clicked_id].listid;
-
-        let config = {
-            method: "GET",
-            headers: {
-                "content-type": "application/json",
-                "authorization": credentials
-            }
-        }
-
-            let response = await fetch(`/listUpdate/${listid}/${userid}`, config)
-            console.log(response.status);
-            let data = await response.json();
-            console.log(data);
-
-            let jsontext = JSON.stringify(data);
-            sessionStorage.setItem("itemData", jsontext);
-        
-        } catch (error) {
-            console.error(error)
-        }
-
-
-    //Finner id-en til update button som har blitt klikket på
-    console.log(clicked_id)
 
     //Denne skal nok endres på
     location.href = "page3_Cecilia_Versjon1_Nora1.html";
 }
 
 storedItems();
-async function storedItems() {
-    try {
+function storedItems() {
+
+
+
         jsontext = sessionStorage.getItem("userData");
         userData = JSON.parse(jsontext);
 
@@ -186,6 +226,10 @@ async function storedItems() {
         listData = JSON.parse(jsontext);
 
         for (let list of listData) {
+
+    if(!list.listid){
+        continue;
+    }
 
     let newListDiv = document.createElement('div');
     newListDiv.id = index;
@@ -202,7 +246,7 @@ async function storedItems() {
     newListDiv.innerHTML = html;
 
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({listid: list.listid, userid: list.userid, listtitle: list.listtitle});
+        lists.push({listid: index+1, userid: list.userid, listtitle: list.listtitle});
         index++;
     }
 
@@ -214,17 +258,34 @@ async function storedItems() {
                 console.log(target);
                 lists.splice(target, 1, "OBJECT DELETED");
                 console.log(lists);
+
                 sessionStorage.removeItem("listData")
                 jsontext = JSON.stringify(lists);
                 sessionStorage.setItem("listData", jsontext);
+
+                jsontext = sessionStorage.getItem("itemData");
+                itemData = JSON.parse(jsontext);
+                console.log(itemData);
+                sessionStorage.removeItem("itemData")
+
+                let storage = [];
+
+                for(let i = 0; i < lists.length; i++){
+                    for(let j = 0; j < itemData.length; j++){
+                        if(lists[i].listid === itemData[j].listid) {
+                            storage.push(itemData[j])
+                            jsontext = JSON.stringify(storage);
+                            sessionStorage.setItem("itemData", jsontext);
+                        }
+                    }
+                }
+
                 div.style.display = "none";
+
+                sessionStorage.getItem("itemData")
             }
         }
         return lists;
-
-    } catch (error) {
-        console.error(error)
-    }
 }
 
 // STIAN -------------------------------------------------------------------------------------

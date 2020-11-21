@@ -41,9 +41,7 @@
 
     //Login -------------------------------------------------------------------------------------------------------------------------------------
 
-        sessionStorage.removeItem("userData")
-        sessionStorage.removeItem("listData")
-        sessionStorage.removeItem("itemData")
+        sessionStorage.clear();
 
         const emailLogin = document.getElementById("loginEmail");
         const passwordLogin = document.getElementById("loginPassword");
@@ -99,6 +97,15 @@
                 jsontext = JSON.stringify(data);
                 sessionStorage.setItem("listData", jsontext);
 
+
+                response = await fetch(`/listUpdate/${userid}`, config)
+                console.log(response.status);
+                data = await response.json();
+                console.log(data);
+
+                jsontext = JSON.stringify(data);
+                sessionStorage.setItem("itemData", jsontext);
+                
                 location.href="page2_Cecilia_Versjon4_AddAndDelete.html"
             
             } catch (error) {
