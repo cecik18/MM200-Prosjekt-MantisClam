@@ -117,7 +117,7 @@ class StorageHandler {
         return results;
     }
 
-     //Oppdaterer list content
+    //Oppdaterer list content
     async updateContent(listid, userid, listCont) {
         const client = new pg.Client(this.credentials);
         let results = null;
@@ -135,7 +135,7 @@ class StorageHandler {
         return results;
     }
 
-     //Renser opp
+    //Renser opp
     async removeUnwantedItems(listid, userid) {
         const client = new pg.Client(this.credentials);
         let deletion = null;
@@ -181,7 +181,7 @@ class StorageHandler {
         return;
     }
 
-     //Renser opp
+    //Renser opp
     async removeUnwantedLists(userid) {
         const client = new pg.Client(this.credentials);
         let deletion = null;

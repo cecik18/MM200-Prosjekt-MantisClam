@@ -6,8 +6,8 @@ const List = require("./modules/list")
 const auth = require("./modules/auth");
 const db = require("./modules/storagehandler");
 const {
-    Router
-  } = require('express');
+  Router
+} = require('express');
 const secret = process.env.hashKey || require("./localenv").hashKey;
 const {
   encrypt,
@@ -28,8 +28,8 @@ server.use("/secure", secureEndpoints);
 server.post("/user", async function (req, res) {
   const newUser = new User(req.body.username, req.body.password);
   let check = await db.retrieveUsername(newUser.username);
-  if(!check) {
-  await newUser.createUser();
+  if (!check) {
+    await newUser.createUser();
     res.status(200).json(newUser).end();
     console.log("User created")
   } else {
@@ -39,9 +39,9 @@ server.post("/user", async function (req, res) {
 
 //Henter bruker fra db
 server.get("/user", auth, async function (req, res) {
-    let requestUser = req.user;// Kommer fra linje 14 i auth.js
-    res.status(200).json({ username: requestUser.username, userid: requestUser.userid }).end();
-    console.log(requestUser);
+  let requestUser = req.user;// Kommer fra linje 14 i auth.js
+  res.status(200).json({ username: requestUser.username, userid: requestUser.userid }).end();
+  console.log(requestUser);
 });
 
 //sletter bruker
@@ -54,7 +54,7 @@ server.post("/deleteUser", async function (req, res) {
 
 //sender ny liste til db
 server.post("/list", async function (req, res) {
-  
+
   let cleanse = await db.removeUnwantedLists(req.body.userid);
 
   let listid = req.body.listid;
@@ -66,36 +66,35 @@ server.post("/list", async function (req, res) {
   let newList = new List(listid, userid, cipherTitle,);
 
   let creation = await newList.createList();
-    res.status(200).json(creation).end();
-    console.log(cleanse);
-    console.log("List created")
+  res.status(200).json(creation).end();
+  console.log(cleanse);
+  console.log("List created")
 });
 
 
 //Henter liste fra db
 server.get("/list/:userid/", async function (req, res) {
-    let cipherList = await db.retrieveList(req.params.userid);
-    console.log(req.params.userid);
-    console.log(cipherList);
-    let listItems = [];
-    for (let list of cipherList) {
-        let listid = list.listid;
-        let userid = list.userid;
-        let title = decrypt(list.listtitle, secret);
-        listItems.push({listid: listid, userid: userid, listtitle: title});
-    }
-    console.log(listItems);
-    res.status(200).json(listItems).end();
+  let cipherList = await db.retrieveList(req.params.userid);
+  console.log(req.params.userid);
+  console.log(cipherList);
+  let listItems = [];
+  for (let list of cipherList) {
+    let listid = list.listid;
+    let userid = list.userid;
+    let title = decrypt(list.listtitle, secret);
+    listItems.push({ listid: listid, userid: userid, listtitle: title });
+  }
+  console.log(listItems);
+  res.status(200).json(listItems).end();
 });
 
-//
 server.post("/listUpdate", async function (req, res) {
-    let cleanse = await db.removeAllUnwantedItems(req.body.userid);
-    let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret));
-    console.log(req.body);
-    console.log(content)
-    console.log(cleanse)
-    res.status(200).json(content).end();
+  let cleanse = await db.removeAllUnwantedItems(req.body.userid);
+  let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret));
+  console.log(req.body);
+  console.log(content)
+  console.log(cleanse)
+  res.status(200).json(content).end();
 });
 
 server.post("/cleanseItems", async function (req, res) {
@@ -111,16 +110,16 @@ server.post("/cleanseLists", async function (req, res) {
 });
 
 server.get("/listUpdate/:userid/", async function (req, res) {
-    let cipherItem = await db.retrieveListItems(req.params.userid)
-    console.log(cipherItem)
-    let Items = [];
-    for (let list of cipherItem) {
-        let listid = list.listid;
-        let userid = list.userid;
-        let cont = decrypt(list.listcont, secret);
-        Items.push({listid: listid, userid: userid, listCont: cont});
-    }
-    res.status(200).json(Items).end();
+  let cipherItem = await db.retrieveListItems(req.params.userid)
+  console.log(cipherItem)
+  let Items = [];
+  for (let list of cipherItem) {
+    let listid = list.listid;
+    let userid = list.userid;
+    let cont = decrypt(list.listcont, secret);
+    Items.push({ listid: listid, userid: userid, listCont: cont });
+  }
+  res.status(200).json(Items).end();
 })
 
 //sletter liste

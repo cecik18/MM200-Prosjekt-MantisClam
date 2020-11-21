@@ -1,12 +1,7 @@
 const database = require("./storagehandler")
 const crypto = require('crypto');
 const secret = process.env.hashSecret || require("../localenv").hashSecret;
-/*
-const secret = 'abcdefg';
-const hash = crypto.createHmac('sha256', secret)
-                   .update('I love cupcakes')
-                   .digest('hex');
-*/
+
 class User {
     constructor(username, password) {
         this.username = username;
@@ -24,15 +19,6 @@ class User {
             console.error(error)
         }
     }
-
-    /*async validate() {
-        try {
-            let respons = await database.retrieveUser(this.username, this.password);
-            return respons;
-        } catch (error) {
-            console.error(error)
-        }
-    } */
 }
 
 module.exports = User
