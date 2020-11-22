@@ -10,6 +10,15 @@ jsontext = sessionStorage.getItem("listData");
 let listData = JSON.parse(jsontext);
 console.log(listData);
 
+let check = listData.indexOf("OBJECT DELETED");
+while (check > -1) {
+    listData.splice(check, 1)
+    check = listData.indexOf("OBJECT DELETED");
+}
+
+jsontext = JSON.stringify(listData);
+sessionStorage.setItem("listData", jsontext);
+
 let credentials = null;
 
 function updateList(clicked_id) {
@@ -34,6 +43,12 @@ addNewListButton.addEventListener('click', function () {
 let lists = [];
 let index = 0;
 
+if (!sessionStorage.getItem("fromIndex")) {
+    jsontext = sessionStorage.getItem("listData");
+    listData = JSON.parse(jsontext);
+    lists = listData
+}
+
 //Funksjon for å legge til en ny div når bruker trykker på "add" knappen
 function addNewListDiv() {
 
@@ -57,14 +72,8 @@ function addNewListDiv() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        if (listData.length > 0) {
-            lists.push({ listid: lists[lists.length - 1].listid + 1, userid: userData.userid, listtitle: titleOfListInput.value });
-        } else {
-            lists.push({ listid: index + 1, userid: userData.userid, listtitle: titleOfListInput.value });
-        }
+        lists.push({ listid: index + 2, userid: userData.userid, listtitle: titleOfListInput.value });
         console.log(lists)
-        jsontext = JSON.stringify(lists);
-        sessionStorage.setItem("listData", jsontext);
         index++;
     }
 
@@ -76,13 +85,6 @@ function addNewListDiv() {
             console.log(target);
             lists.splice(target, 1, "OBJECT DELETED");
             console.log(lists);
-
-            let check = lists.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                lists.splice(check, 1)
-                index--;
-                check = lists.indexOf("OBJECT DELETED");
-            }
 
             jsontext = JSON.stringify(lists);
             sessionStorage.setItem("listData", jsontext);
@@ -96,6 +98,7 @@ function addNewListDiv() {
 
             if (itemData) {
 
+                //Hvis en liste fjernes fra sessionstorage fjernes også items i den lista
                 for (let i = 0; i < lists.length; i++) {
                     for (let j = 0; j < itemData.length; j++) {
                         if (lists[i].listid === itemData[j].listid) {
@@ -112,11 +115,20 @@ function addNewListDiv() {
             sessionStorage.getItem("itemData")
         }
     }
+    jsontext = JSON.stringify(lists);
+    sessionStorage.setItem("listData", jsontext);
     return lists;
 }
 
 //save funksjon
 function saveChanges() {
+
+
+    
+
+    cleanseLists();
+
+    cleanseItems();
 
     updateListTitle();
 
@@ -124,13 +136,7 @@ function saveChanges() {
 
 }
 
-function updateListTitle() {
-    //legger nye lister inn i db -------------------------------------------------------------------------------------------------------
-
-    jsontext = sessionStorage.getItem("listData");
-    listData = JSON.parse(jsontext);
-    console.log(listData)
-
+function cleanseLists() {
     let body = {
         userid: userData.userid
     }
@@ -146,18 +152,50 @@ function updateListTitle() {
     fetch("/cleanseLists", config).then(resp => {
         console.log(resp.status);
     })
+}
+
+function cleanseItems() {
+    let body = {
+        userid: userData.userid
+    }
+    console.log(body)
+    let config = {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "authorization": credentials
+        },
+        body: JSON.stringify(body)
+    }
+
+    fetch("/cleanseItems", config).then(resp => {
+        console.log(resp.status);
+    })
+}
+
+function updateListTitle() {
+    //legger nye lister inn i db -------------------------------------------------------------------------------------------------------
+
+    jsontext = sessionStorage.getItem("listData");
+    listData = JSON.parse(jsontext);
+    console.log(listData)
 
     if (listData.length > 0) {
         console.log("flere lists")
 
         for (let list of listData) {
 
-            body = {
+            if (list === "OBJECT DELETED") {
+                continue;
+            }
+
+            let body = {
                 listid: list.listid,
                 userid: userData.userid,
                 listtitle: list.listtitle
             }
-            config = {
+            console.log(body);
+            let config = {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
@@ -180,34 +218,17 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
-    let body = {
-        userid: userData.userid
-    }
-    console.log(body)
-    let config = {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "authorization": credentials
-        },
-        body: JSON.stringify(body)
-    }
-
-    fetch("/cleanseItems", config).then(resp => {
-        console.log(resp.status);
-    })
-
     if (itemData.length > 0) {
         console.log("flere items")
 
         for (let list of itemData) {
 
-            body = {
+            let body = {
                 listid: list.listid,
                 userid: userData.userid,
                 listCont: list.listCont
             }
-            config = {
+            let config = {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
@@ -227,7 +248,7 @@ function updateListCont() {
 storedItems();
 function storedItems() {
 
-
+    lists = []
 
     jsontext = sessionStorage.getItem("userData");
     userData = JSON.parse(jsontext);
@@ -256,7 +277,7 @@ function storedItems() {
         newListDiv.innerHTML = html;
 
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({ listid: index + 1, userid: list.userid, listtitle: list.listtitle });
+        lists.push({ listid: list.listid, userid: list.userid, listtitle: list.listtitle });
         index++;
     }
 
@@ -268,14 +289,6 @@ function storedItems() {
             console.log(target);
             lists.splice(target, 1, "OBJECT DELETED");
             console.log(lists);
-
-            let check = lists.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                lists.splice(check, 1)
-                //importedListId--;
-                index--;
-                check = lists.indexOf("OBJECT DELETED");
-            }
 
             jsontext = JSON.stringify(lists);
             sessionStorage.setItem("listData", jsontext);
@@ -289,6 +302,7 @@ function storedItems() {
 
             if (itemData) {
 
+                //Hvis en liste fjernes fra sessionstorage fjernes også items i den lista
                 for (let i = 0; i < lists.length; i++) {
                     for (let j = 0; j < itemData.length; j++) {
                         if (lists[i].listid === itemData[j].listid) {
@@ -304,6 +318,10 @@ function storedItems() {
 
             sessionStorage.getItem("itemData")
         }
+    }
+    if (sessionStorage.getItem("fromIndex")) {
+        jsontext = JSON.stringify(lists);
+        sessionStorage.setItem("listData", jsontext);
     }
     return lists;
 }

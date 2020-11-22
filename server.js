@@ -54,9 +54,6 @@ server.post("/deleteUser", async function (req, res) {
 
 //sender ny liste til db
 server.post("/list", async function (req, res) {
-
-  let cleanse = await db.removeUnwantedLists(req.body.userid, req.body.listid);
-
   let listid = req.body.listid;
   let userid = req.body.userid;
   let listTitle = req.body.listtitle;
@@ -67,7 +64,6 @@ server.post("/list", async function (req, res) {
 
   let creation = await newList.createList();
   res.status(200).json(creation).end();
-  console.log(cleanse);
   console.log("List created")
 });
 

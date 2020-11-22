@@ -4,6 +4,8 @@ let userData = JSON.parse(jsontext);
 console.log(userData);
 let credentials = null;
 
+sessionStorage.removeItem("fromIndex")
+
 //henter fra sessionstorage
 jsontext = sessionStorage.getItem("listData");
 let listData = JSON.parse(jsontext);

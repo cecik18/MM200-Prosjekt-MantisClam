@@ -49,6 +49,7 @@ async function submit(evt) {
         let jsontext = JSON.stringify(data);
         sessionStorage.setItem("userData", jsontext);
 
+        sessionStorage.setItem("fromIndex", true);
 
         //henter fra sessionstorage
         jsontext = sessionStorage.getItem("userData");
