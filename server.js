@@ -55,7 +55,7 @@ server.post("/deleteUser", async function (req, res) {
 //sender ny liste til db
 server.post("/list", async function (req, res) {
 
-  let cleanse = await db.removeUnwantedLists(req.body.userid);
+  let cleanse = await db.removeUnwantedLists(req.body.userid, req.body.listid);
 
   let listid = req.body.listid;
   let userid = req.body.userid;
@@ -89,11 +89,10 @@ server.get("/list/:userid/", async function (req, res) {
 });
 
 server.post("/listUpdate", async function (req, res) {
-  let cleanse = await db.removeAllUnwantedItems(req.body.userid);
+  console.log(req.body);
   let content = await db.updateContent(req.body.listid, req.body.userid, encrypt(req.body.listCont, secret));
   console.log(req.body);
   console.log(content)
-  console.log(cleanse)
   res.status(200).json(content).end();
 });
 
@@ -121,14 +120,6 @@ server.get("/listUpdate/:userid/", async function (req, res) {
   }
   res.status(200).json(Items).end();
 })
-
-//sletter liste
-server.post("/deleteItems", async function (req, res) {
-  let deletion = await db.removeUnwantedItems(req.body.listid, req.body.userid)
-  console.log(deletion);
-  res.status(200).json(deletion).end();
-  console.log("Deleted");
-});
 
 server.listen(server.get('port'), function () {
   console.log('server running', server.get('port'));

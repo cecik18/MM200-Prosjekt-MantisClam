@@ -15,44 +15,17 @@ console.log(listData);
 
 let credentials = null;
 
-async function updateList(clicked_id) {
-    try {
+function updateList(clicked_id) {
 
 
 
-        let userid = userData.userid;
+    //Finner id-en til update button som har blitt klikket på
+    console.log(clicked_id)
 
-        let config = {
-            method: "GET",
-            headers: {
-                "content-type": "application/json",
-                "authorization": credentials
-            }
-        }
-        let response = await fetch(`/listUpdate/${userid}`, config)
-        console.log(response.status);
-        let data = await response.json();
-        console.log(data);
+    jsontext = JSON.stringify(clicked_id);
+    sessionStorage.setItem("clickedID", jsontext);
 
-        jsontext = JSON.stringify(data);
-        sessionStorage.setItem("itemData", jsontext);
-
-        jsontext = sessionStorage.getItem("itemData");
-        let itemData = JSON.parse(jsontext);
-        console.log(itemData);
-
-
-        //Finner id-en til update button som har blitt klikket på
-        console.log(clicked_id)
-
-        jsontext = JSON.stringify(clicked_id);
-        sessionStorage.setItem("clickedID", jsontext);
-
-        //Denne skal nok endres på
-        location.href = "Page3_Items.html";
-    } catch (error) {
-        console.error(error)
-    }
+    location.href = "Page3_Items.html";
 }
 
 
@@ -65,31 +38,6 @@ addNewListButton.addEventListener('click', function () {
 
 let lists = [];
 let index = 0;
-let importedListId = 0;
-let allIds = [];
-
-if (listData) {
-
-    for (let i = 0; i < listData.length; i++) {
-        allIds.push(listData[i].listid)
-    }
-
-    function max(arr) {
-        let max = arr[0];
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > max) {
-                max = arr[i];
-            }
-        }
-        return max;
-    }
-
-    let maxValue = max(allIds);
-
-    importedListId = maxValue;
-
-    console.log(importedListId);
-}
 
 //Funksjon for å legge til en ny div når bruker trykker på "add" knappen
 function addNewListDiv() {
@@ -114,15 +62,14 @@ function addNewListDiv() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({ listid: importedListId + 1, userid: userData.userid, listtitle: titleOfListInput.value });
+        lists.push({ listid: lists[lists.length - 1].listid + 1, userid: userData.userid, listtitle: titleOfListInput.value });
         console.log(lists)
         jsontext = JSON.stringify(lists);
         sessionStorage.setItem("listData", jsontext);
-        importedListId++;
         index++;
     }
 
-    var close = document.getElementsByClassName("deleteListButton");
+    let close = document.getElementsByClassName("deleteListButton");
     for (i = 0; i < close.length; i++) {
         close[i].onclick = function (evt) {
             let div = this.parentElement;
@@ -131,7 +78,6 @@ function addNewListDiv() {
             lists.splice(target, 1, "OBJECT DELETED");
             console.log(lists);
 
-            sessionStorage.removeItem("listData")
             jsontext = JSON.stringify(lists);
             sessionStorage.setItem("listData", jsontext);
 
@@ -169,7 +115,7 @@ function saveChanges() {
     let check = lists.indexOf("OBJECT DELETED");
     while (check > -1) {
         lists.splice(check, 1)
-        importedListId--;
+        //importedListId--;
         index--;
         check = lists.indexOf("OBJECT DELETED");
     }
@@ -177,6 +123,8 @@ function saveChanges() {
     jsontext = JSON.stringify(lists);
     sessionStorage.setItem("listData", jsontext);
 
+    jsontext = sessionStorage.getItem("listData");
+    listData = JSON.parse(jsontext);
 
     updateListTitle();
 
@@ -198,7 +146,7 @@ function updateListTitle() {
 
             let body = {
                 listid: list.listid,
-                userid: list.userid,
+                userid: userData.userid,
                 listtitle: list.listtitle
             }
             let config = {
@@ -242,18 +190,34 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
+    let body = {
+        userid: userData.userid
+    }
+    console.log(body)
+    let config = {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "authorization": credentials
+        },
+        body: JSON.stringify(body)
+    }
+
+    fetch("/cleanseItems", config).then(resp => {
+        console.log(resp.status);
+    })
+
     if (itemData) {
         console.log("flere items")
 
         for (let list of itemData) {
 
-            let body = {
+            body = {
                 listid: list.listid,
-                userid: list.userid,
+                userid: userData.userid,
                 listCont: list.listCont
             }
-            console.log(body)
-            let config = {
+            config = {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
@@ -261,31 +225,13 @@ function updateListCont() {
                 },
                 body: JSON.stringify(body)
             }
+            console.log(body)
 
             fetch("/listUpdate", config).then(resp => {
                 console.log(resp.status);
             })
         }
-    } else {
-        console.log("tom")
-        let body = {
-            userid: userData.userid
-        }
-        console.log(body)
-        let config = {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "authorization": credentials
-            },
-            body: JSON.stringify(body)
-        }
-
-        fetch("/cleanseItems", config).then(resp => {
-            console.log(resp.status);
-        })
     }
-
 }
 
 storedItems();
@@ -320,12 +266,11 @@ function storedItems() {
         newListDiv.innerHTML = html;
 
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({ listid: importedListId + 1, userid: list.userid, listtitle: list.listtitle });
-        importedListId++;
+        lists.push({ listid: index + 1, userid: list.userid, listtitle: list.listtitle });
         index++;
     }
 
-    var close = document.getElementsByClassName("deleteListButton");
+    let close = document.getElementsByClassName("deleteListButton");
     for (i = 0; i < close.length; i++) {
         close[i].onclick = function (evt) {
             let div = this.parentElement;

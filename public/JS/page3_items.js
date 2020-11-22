@@ -26,6 +26,9 @@ let newListItemInput = document.getElementById("newListItemInput");
 
 // Lager nytt liste objekt og legger det i sessionstorage -------------------------------------------------------------------------------------
 let tasks = [];
+if (itemData) {
+    tasks = itemData;
+}
 let index = 0;
 
 function NewListItem() {
@@ -39,29 +42,33 @@ function NewListItem() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("listOfListItems").appendChild(li);
-        tasks.push({ listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue });
+        tasks.push({listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue });
         console.log(tasks);
-
-        let temp = tasks.concat(itemData);
-        jsontext = JSON.stringify(temp);
+        jsontext = JSON.stringify(tasks);
         sessionStorage.setItem("itemData", jsontext);
-
         index++;
     }
     document.getElementById("newListItemInput").value = "";
 
-    var close = document.getElementsByClassName("deleteListItemButton");
+    let close = document.getElementsByClassName("deleteListItemButton");
     for (i = 0; i < close.length; i++) {
         close[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
-            tasks.splice(target, 1, "OBJECT DELETED");
+            tasks.splice(target - 1, 1, "OBJECT DELETED");
             console.log(tasks.length);
             console.log(tasks);
-
+            let check = tasks.indexOf("OBJECT DELETED");
+            while (check > -1) {
+                tasks.splice(check, 1)
+                check = tasks.indexOf("OBJECT DELETED");
+            }
+            jsontext = JSON.stringify(tasks);
+            sessionStorage.setItem("itemData", jsontext);
             div.style.display = "none";
         }
     }
+
     return tasks;
 }
 
@@ -69,55 +76,6 @@ function NewListItem() {
 
 //save and exit funksjon------------------------------------------------------------------------------------------------------------
 function saveChanges() {
-
-    let check = tasks.indexOf("OBJECT DELETED");
-    while (check > -1) {
-        tasks.splice(check, 1)
-        check = tasks.indexOf("OBJECT DELETED");
-    }
-
-    if (tasks.length > 0) {
-
-        for (let list of tasks) {
-
-            let body = {
-                listid: listData[clickedID].listid,
-                userid: userData.userid,
-                listCont: list.listCont
-            }
-            console.log(body)
-            let config = {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json",
-                    "authorization": credentials
-                },
-                body: JSON.stringify(body)
-            }
-
-            fetch("/listUpdate", config).then(resp => {
-                console.log(resp.status);
-            })
-        }
-    } else {
-        let body = {
-            listid: listData[clickedID].listid,
-            userid: userData.userid
-        }
-        console.log(body)
-        let config = {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "authorization": credentials
-            },
-            body: JSON.stringify(body)
-        }
-
-        fetch("/deleteItems", config).then(resp => {
-            console.log(resp.status);
-        })
-    }
 
     sessionStorage.removeItem("clickedID");
     location.href = "../Page2_Lists.html";
@@ -127,59 +85,52 @@ function saveChanges() {
 
 //Lager listene som er i databasen allerede------------------------------------------------------------------------------------------------------------
 
-if (listData.length > 0) {
+if (itemData.length > 0) {
     storedItems();
 }
 
-async function storedItems() {
-    try {
+function storedItems() {
 
         jsontext = sessionStorage.getItem("itemData");
         itemData = JSON.parse(jsontext);
         console.log(itemData);
 
-        let storage = [];
-
         for (let i = 0; i < itemData.length; i++) {
             if (itemData[i].listid === listData[clickedID].listid) {
-                storage.push(itemData[i])
+                let li = document.createElement("li");
+                let inputValue = itemData[i].listCont;
+                let t = document.createTextNode(inputValue);
+                let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
+                li.innerHTML = htmlDelete;
+                li.appendChild(t);
+                document.getElementById("listOfListItems").appendChild(li);
+                tasks.push({listid: itemData[i].listid, userid: userData.userid, listCont: inputValue });
+                console.log(tasks)
+                tasks.splice(i, 1)
+                index++;
             }
         }
-        let items = storage;
 
-        for (let item of items) {
-
-            let li = document.createElement("li");
-            let inputValue = item.listCont;
-            let t = document.createTextNode(inputValue);
-            let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
-            li.innerHTML = htmlDelete;
-            li.appendChild(t);
-            document.getElementById("listOfListItems").appendChild(li);
-            tasks.push({ listid: item.listid, userid: userData.userid, listCont: inputValue });
-            console.log(tasks)
-
-            index++;
-
-        }
-
-        var close = document.getElementsByClassName("deleteListItemButton");
+        let close = document.getElementsByClassName("deleteListItemButton");
         for (i = 0; i < close.length; i++) {
             close[i].onclick = function (evt) {
                 let div = this.parentElement;
                 let target = evt.target.id;
-                tasks.splice(target, 1, "OBJECT DELETED");
+                tasks.splice(target - 1, 1, "OBJECT DELETED");
                 console.log(tasks.length);
                 console.log(tasks);
+                let check = tasks.indexOf("OBJECT DELETED");
+                while (check > -1) {
+                    tasks.splice(check, 1)
+                    check = tasks.indexOf("OBJECT DELETED");
+                }
+                jsontext = JSON.stringify(tasks);
+                sessionStorage.setItem("itemData", jsontext);
                 div.style.display = "none";
             }
         }
         return tasks;
     }
-    catch (err) {
-        console.log(err);
-    }
-}
 //------------------------------------------------------------------------------------------------------------
 
 //"hindrer forbipassering av login"

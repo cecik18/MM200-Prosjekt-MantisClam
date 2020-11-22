@@ -106,7 +106,7 @@ class StorageHandler {
         let results = null;
         try {
             await client.connect();
-            results = await client.query('SELECT * FROM "Lists" WHERE userid=$1;', [userid]);
+            results = await client.query('SELECT * FROM "Lists" WHERE userid=$1 ORDER BY listid ASC;', [userid]);
             results = results.rows;
             client.end();
         } catch (err) {
@@ -135,36 +135,6 @@ class StorageHandler {
         return results;
     }
 
-    //Renser opp
-    async removeUnwantedItems(listid, userid) {
-        const client = new pg.Client(this.credentials);
-        let deletion = null;
-        try {
-            await client.connect();
-            deletion = await client.query('DELETE FROM "ListItems" WHERE listid=$1 AND userid=$2;', [listid, userid]);
-            client.end();
-        } catch (err) {
-            client.end();
-            console.log(err);
-        }
-
-        return;
-    }
-
-    async removeAllUnwantedItems(userid) {
-        const client = new pg.Client(this.credentials);
-        let deletion = null;
-        try {
-            await client.connect();
-            deletion = await client.query('DELETE FROM "ListItems" WHERE userid=$1;', [userid]);
-            client.end();
-        } catch (err) {
-            client.end();
-            console.log(err);
-        }
-
-        return;
-    }
 
     async removeAllUserItems(userid) {
         const client = new pg.Client(this.credentials);
@@ -214,22 +184,6 @@ class StorageHandler {
         return results;
     }
 
-    //sletter liste
-    async deleteList(listid, userid) {
-        const client = new pg.Client(this.credentials);
-        let results = null;
-        try {
-            await client.connect();
-            results = await client.query('DELETE FROM "Lists" WHERE listid=$1 AND userid=$2;', [listid, userid]);
-            results = results.rows;
-            client.end();
-        } catch (err) {
-            client.end();
-            results = err;
-        }
-
-        return results;
-    }
 }
 
 module.exports = new StorageHandler(dbCredentials);
