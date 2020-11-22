@@ -5,6 +5,10 @@ sessionStorage.clear();
 const emailLogin = document.getElementById("loginEmail");
 const passwordLogin = document.getElementById("loginPassword");
 
+const loginFeedback = document.getElementById("loginFeedback");
+const createFeedback = document.getElementById("createFeedback");
+
+
 let credentials = null;
 
 loginForm.onsubmit = submit;
@@ -33,6 +37,11 @@ async function submit(evt) {
         //Lagrer userid og går til page 2 om login blir godkjent
         let response = await fetch(`/user`, config)
         console.log(response.status);
+        if (response.status === 200) {
+            loginFeedback.innerHTML = "Login successful."
+        } else if (response.status === 403) {
+            loginFeedback.innerHTML = "Incorrect user/password."
+        }
         let data = await response.json();
         console.log(data);
 
@@ -103,8 +112,10 @@ document.getElementById("createBTN").onclick = function (evt) {
 
     fetch("/user", config).then(resp => {
         console.log(resp.status);
-        if (resp.status === 409) {
-            alert("User already exists!")
+        if (resp.status === 200) {
+            createFeedback.innerHTML = "User created."
+        } else if (resp.status === 409) {
+            createFeedback.innerHTML = "User already exists."
         }
     })
 
