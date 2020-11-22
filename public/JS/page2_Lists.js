@@ -57,10 +57,10 @@ function addNewListDiv() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        if(listData.length > 0){
-        lists.push({ listid: lists[lists.length - 1].listid + 1, userid: userData.userid, listtitle: titleOfListInput.value });
+        if (listData.length > 0) {
+            lists.push({ listid: lists[lists.length - 1].listid + 1, userid: userData.userid, listtitle: titleOfListInput.value });
         } else {
-        lists.push({ listid: index + 1, userid: userData.userid, listtitle: titleOfListInput.value });
+            lists.push({ listid: index + 1, userid: userData.userid, listtitle: titleOfListInput.value });
         }
         console.log(lists)
         jsontext = JSON.stringify(lists);
@@ -131,17 +131,33 @@ function updateListTitle() {
     listData = JSON.parse(jsontext);
     console.log(listData)
 
+    let body = {
+        userid: userData.userid
+    }
+    let config = {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "authorization": credentials
+        },
+        body: JSON.stringify(body)
+    }
+
+    fetch("/cleanseLists", config).then(resp => {
+        console.log(resp.status);
+    })
+
     if (listData.length > 0) {
         console.log("flere lists")
 
         for (let list of listData) {
 
-            let body = {
+            body = {
                 listid: list.listid,
                 userid: userData.userid,
                 listtitle: list.listtitle
             }
-            let config = {
+            config = {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
@@ -154,24 +170,6 @@ function updateListTitle() {
                 console.log(resp.status);
             })
         }
-    } else {
-        console.log("tom")
-
-        let body = {
-            userid: userData.userid
-        }
-        let config = {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "authorization": credentials
-            },
-            body: JSON.stringify(body)
-        }
-
-        fetch("/cleanseLists", config).then(resp => {
-            console.log(resp.status);
-        })
     }
 }
 
@@ -199,7 +197,7 @@ function updateListCont() {
         console.log(resp.status);
     })
 
-    if (itemData) {
+    if (itemData.length > 0) {
         console.log("flere items")
 
         for (let list of itemData) {
