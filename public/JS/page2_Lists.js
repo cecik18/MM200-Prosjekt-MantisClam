@@ -10,14 +10,9 @@ jsontext = sessionStorage.getItem("listData");
 let listData = JSON.parse(jsontext);
 console.log(listData);
 
-
-
-
 let credentials = null;
 
 function updateList(clicked_id) {
-
-
 
     //Finner id-en til update button som har blitt klikket på
     console.log(clicked_id)
@@ -62,7 +57,11 @@ function addNewListDiv() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("container").appendChild(newListDiv);
+        if(listData.length > 0){
         lists.push({ listid: lists[lists.length - 1].listid + 1, userid: userData.userid, listtitle: titleOfListInput.value });
+        } else {
+        lists.push({ listid: index + 1, userid: userData.userid, listtitle: titleOfListInput.value });
+        }
         console.log(lists)
         jsontext = JSON.stringify(lists);
         sessionStorage.setItem("listData", jsontext);
@@ -77,6 +76,13 @@ function addNewListDiv() {
             console.log(target);
             lists.splice(target, 1, "OBJECT DELETED");
             console.log(lists);
+
+            let check = lists.indexOf("OBJECT DELETED");
+            while (check > -1) {
+                lists.splice(check, 1)
+                index--;
+                check = lists.indexOf("OBJECT DELETED");
+            }
 
             jsontext = JSON.stringify(lists);
             sessionStorage.setItem("listData", jsontext);
@@ -101,9 +107,9 @@ function addNewListDiv() {
                 }
             }
 
-            sessionStorage.getItem("itemData")
-
             div.style.display = "none";
+
+            sessionStorage.getItem("itemData")
         }
     }
     return lists;
@@ -111,20 +117,6 @@ function addNewListDiv() {
 
 //save funksjon
 function saveChanges() {
-
-    let check = lists.indexOf("OBJECT DELETED");
-    while (check > -1) {
-        lists.splice(check, 1)
-        //importedListId--;
-        index--;
-        check = lists.indexOf("OBJECT DELETED");
-    }
-
-    jsontext = JSON.stringify(lists);
-    sessionStorage.setItem("listData", jsontext);
-
-    jsontext = sessionStorage.getItem("listData");
-    listData = JSON.parse(jsontext);
 
     updateListTitle();
 
@@ -279,7 +271,14 @@ function storedItems() {
             lists.splice(target, 1, "OBJECT DELETED");
             console.log(lists);
 
-            sessionStorage.removeItem("listData")
+            let check = lists.indexOf("OBJECT DELETED");
+            while (check > -1) {
+                lists.splice(check, 1)
+                //importedListId--;
+                index--;
+                check = lists.indexOf("OBJECT DELETED");
+            }
+
             jsontext = JSON.stringify(lists);
             sessionStorage.setItem("listData", jsontext);
 

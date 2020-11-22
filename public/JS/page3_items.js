@@ -45,7 +45,7 @@ function NewListItem() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("listOfListItems").appendChild(li);
-        tasks.push({listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue });
+        tasks.push({ listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue });
         console.log(tasks);
         jsontext = JSON.stringify(tasks);
         sessionStorage.setItem("itemData", jsontext);
@@ -94,46 +94,46 @@ if (itemData.length > 0) {
 
 function storedItems() {
 
-        jsontext = sessionStorage.getItem("itemData");
-        itemData = JSON.parse(jsontext);
-        console.log(itemData);
+    jsontext = sessionStorage.getItem("itemData");
+    itemData = JSON.parse(jsontext);
+    console.log(itemData);
 
-        for (let i = 0; i < itemData.length; i++) {
-            if (itemData[i].listid === listData[clickedID].listid) {
-                let li = document.createElement("li");
-                let inputValue = itemData[i].listCont;
-                let t = document.createTextNode(inputValue);
-                let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
-                li.innerHTML = htmlDelete;
-                li.appendChild(t);
-                document.getElementById("listOfListItems").appendChild(li);
-                tasks.push({listid: itemData[i].listid, userid: userData.userid, listCont: inputValue });
-                console.log(tasks)
-                tasks.splice(i, 1)
-                index++;
-            }
+    for (let i = 0; i < itemData.length; i++) {
+        if (itemData[i].listid === listData[clickedID].listid) {
+            let li = document.createElement("li");
+            let inputValue = itemData[i].listCont;
+            let t = document.createTextNode(inputValue);
+            let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
+            li.innerHTML = htmlDelete;
+            li.appendChild(t);
+            document.getElementById("listOfListItems").appendChild(li);
+            tasks.push({ listid: itemData[i].listid, userid: userData.userid, listCont: inputValue });
+            console.log(tasks)
+            tasks.splice(i, 1)
+            index++;
         }
-
-        let close = document.getElementsByClassName("deleteListItemButton");
-        for (i = 0; i < close.length; i++) {
-            close[i].onclick = function (evt) {
-                let div = this.parentElement;
-                let target = evt.target.id;
-                tasks.splice(target - 1, 1, "OBJECT DELETED");
-                console.log(tasks.length);
-                console.log(tasks);
-                let check = tasks.indexOf("OBJECT DELETED");
-                while (check > -1) {
-                    tasks.splice(check, 1)
-                    check = tasks.indexOf("OBJECT DELETED");
-                }
-                jsontext = JSON.stringify(tasks);
-                sessionStorage.setItem("itemData", jsontext);
-                div.style.display = "none";
-            }
-        }
-        return tasks;
     }
+
+    let close = document.getElementsByClassName("deleteListItemButton");
+    for (i = 0; i < close.length; i++) {
+        close[i].onclick = function (evt) {
+            let div = this.parentElement;
+            let target = evt.target.id;
+            tasks.splice(target - 1, 1, "OBJECT DELETED");
+            console.log(tasks.length);
+            console.log(tasks);
+            let check = tasks.indexOf("OBJECT DELETED");
+            while (check > -1) {
+                tasks.splice(check, 1)
+                check = tasks.indexOf("OBJECT DELETED");
+            }
+            jsontext = JSON.stringify(tasks);
+            sessionStorage.setItem("itemData", jsontext);
+            div.style.display = "none";
+        }
+    }
+    return tasks;
+}
 //------------------------------------------------------------------------------------------------------------
 
 //"hindrer forbipassering av login"
