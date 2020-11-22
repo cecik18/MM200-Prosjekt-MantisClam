@@ -20,6 +20,9 @@ let itemData = JSON.parse(jsontext);
 console.log(itemData);
 
 let newListItemInput = document.getElementById("newListItemInput");
+
+let titleOfList = document.getElementById("titleOfList")
+titleOfList.innerHTML = listData[clickedID].listtitle;
 // --------------------------------------------------------------------------------------------------------------------------------------------------
 
 
