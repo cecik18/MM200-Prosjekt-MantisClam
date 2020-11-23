@@ -62,14 +62,9 @@ function NewListItem() {
         deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
-            items.splice(target - 1, 1, "OBJECT DELETED");
+            items.splice(target, 1, "OBJECT DELETED");
             console.log(items.length);
             console.log(items);
-            let check = items.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                items.splice(check, 1)
-                check = items.indexOf("OBJECT DELETED");
-            }
             jsontext = JSON.stringify(items);
             sessionStorage.setItem("itemData", jsontext);
             div.style.display = "none";
@@ -124,14 +119,9 @@ function storedItems() {
         deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
-            items.splice(target - 1, 1, "OBJECT DELETED");
+            items.splice(target, 1, "OBJECT DELETED");
             console.log(items.length);
             console.log(items);
-            let check = items.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                items.splice(check, 1)
-                check = items.indexOf("OBJECT DELETED");
-            }
             jsontext = JSON.stringify(items);
             sessionStorage.setItem("itemData", jsontext);
             div.style.display = "none";

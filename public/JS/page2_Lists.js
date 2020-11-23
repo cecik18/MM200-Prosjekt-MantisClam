@@ -238,10 +238,13 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
-    if (itemData.length > 0) {
-        console.log("flere items")
+    if(itemData.length > 0) {
 
         for (let list of itemData) {
+
+            if (list === "OBJECT DELETED") {
+                continue;
+            }
 
             let body = {
                 listid: list.listid,
