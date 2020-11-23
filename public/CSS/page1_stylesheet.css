@@ -1,6 +1,8 @@
 
 body {
     background-color: rgb(185, 228, 255);
+    height: 100vh;
+    background-image: linear-gradient(rgb(26, 106, 167), rgb(185, 228, 255));
 }
 
 p {
@@ -19,7 +21,7 @@ p {
 }
 
 .grid-container button {
-    background-color: rgb(26, 106, 167);
+    background-color: rgb(70, 156, 222);
     border: none;
     width: 106px;
     height: 40px;

@@ -5,6 +5,9 @@ body{
     margin-left: 10%;
     margin-right: 10%;
     background-color: rgb(185, 228, 255);
+    height: 100vh;
+    background-image: linear-gradient(rgb(26, 106, 167), rgb(185, 228, 255));
+    background-repeat: no-repeat;
 }
 
 .grid-container {

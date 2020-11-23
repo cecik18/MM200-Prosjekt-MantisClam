@@ -101,9 +101,9 @@ function addNewListDiv() {
         index++;
     }
 
-    let close = document.getElementsByClassName("deleteListButton");
-    for (i = 0; i < close.length; i++) {
-        close[i].onclick = function (evt) {
+    let deleteOnClick = document.getElementsByClassName("deleteListButton");
+    for (i = 0; i < deleteOnClick.length; i++) {
+        deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
             console.log(target);
@@ -301,9 +301,9 @@ function storedItems() {
         index++;
     }
 
-    let close = document.getElementsByClassName("deleteListButton");
-    for (i = 0; i < close.length; i++) {
-        close[i].onclick = function (evt) {
+    let deleteOnClick = document.getElementsByClassName("deleteListButton");
+    for (i = 0; i < deleteOnClick.length; i++) {
+        deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
             console.log(target);
