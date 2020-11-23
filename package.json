@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Task planner (to-do list)",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stiansenhl/MM200-Prosjekt-MantisClam.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stiansenhl/MM200-Prosjekt-MantisClam/issues"
+  },
+  "homepage": "https://github.com/stiansenhl/MM200-Prosjekt-MantisClam#readme"
+}
