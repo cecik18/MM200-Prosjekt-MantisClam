@@ -43,10 +43,33 @@ addNewListButton.addEventListener('click', function () {
 let lists = [];
 let index = 0;
 
+let lastListIndex = 0;
+
+//hvis man ikke kommer fra index, aka kommer fra page 3, settes lists til det som allerede er i storage for å fortsette der den ender.
 if (!sessionStorage.getItem("fromIndex")) {
     jsontext = sessionStorage.getItem("listData");
     listData = JSON.parse(jsontext);
     lists = listData
+}
+
+//setter index til å være største listeid fra listData for å fortsette derfra og unngå dupliseringer.
+if (listData.length > 0) {
+    let maxStorage = [];
+    for (let i = 0; i < listData.length; i++) {
+        maxStorage.push(listData[i].listid)
+    }
+    let maxValue = max(maxStorage)
+    lastListIndex = maxValue;
+}
+
+function max(array) {
+    let max = array[0];
+    for (let i = 1; i < array.length; i++) {
+        if (array[i] > max) {
+            max = array[i];
+        }
+    }
+    return max;
 }
 
 //Funksjon for å legge til en ny div når bruker trykker på "add" knappen
@@ -72,8 +95,9 @@ function addNewListDiv() {
         alert("At least 2 characters.");
     } else {
         document.getElementById("container").appendChild(newListDiv);
-        lists.push({ listid: index + 2, userid: userData.userid, listtitle: titleOfListInput.value });
+        lists.push({ listid: lastListIndex + 1, userid: userData.userid, listtitle: titleOfListInput.value });
         console.log(lists)
+        lastListIndex++;
         index++;
     }
 
@@ -124,7 +148,7 @@ function addNewListDiv() {
 function saveChanges() {
 
 
-    
+
 
     cleanseLists();
 
