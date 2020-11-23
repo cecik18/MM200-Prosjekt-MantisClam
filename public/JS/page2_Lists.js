@@ -200,19 +200,20 @@ function updateListTitle() {
     listData = JSON.parse(jsontext);
     console.log(listData)
 
-    if (listData.length > 0) {
+    if (listData) {
         console.log("flere lists")
 
-        for (let list of listData) {
+        for (let i = 0; i < listData.length; i++) {
 
-            if (list === "OBJECT DELETED") {
+            if (listData[i] == "OBJECT DELETED") {
+                console.log("skipped")
                 continue;
             }
 
             let body = {
-                listid: list.listid,
+                listid: listData[i].listid,
                 userid: userData.userid,
-                listtitle: list.listtitle
+                listtitle: listData[i].listtitle
             }
             console.log(body);
             let config = {
@@ -238,18 +239,19 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
-    if(itemData.length > 0) {
+    if(itemData) {
 
-        for (let list of itemData) {
+        for (let i = 0; i < itemData.length; i++) {
 
-            if (list === "OBJECT DELETED") {
+            if (itemData[i] == "OBJECT DELETED") {
+                console.log("skipped")
                 continue;
             }
 
             let body = {
-                listid: list.listid,
+                listid: itemData[i].listid,
                 userid: userData.userid,
-                listCont: list.listCont
+                listCont: itemData[i].listCont
             }
             let config = {
                 method: "POST",
