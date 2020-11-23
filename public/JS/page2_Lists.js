@@ -135,8 +135,6 @@ function addNewListDiv() {
             }
 
             div.style.display = "none";
-
-            sessionStorage.getItem("itemData")
         }
     }
     jsontext = JSON.stringify(lists);
@@ -151,9 +149,6 @@ function saveChanges() {
 
     cleanseItems();
 
-    updateListTitle();
-
-    updateListCont();
 }
 
 function cleanseLists() {
@@ -171,6 +166,9 @@ function cleanseLists() {
 
     fetch("/cleanseLists", config).then(resp => {
         console.log(resp.status);
+        if (resp.status === 200) {
+            updateListTitle();
+        }
     })
 }
 
@@ -190,6 +188,9 @@ function cleanseItems() {
 
     fetch("/cleanseItems", config).then(resp => {
         console.log(resp.status);
+        if (resp.status === 200) {
+            updateListCont();
+        }
     })
 }
 
@@ -238,7 +239,7 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
-    if (itemData.length > 0) {
+    if (itemData) {
         console.log("flere items")
 
         for (let list of itemData) {
@@ -262,6 +263,8 @@ function updateListCont() {
                 console.log(resp.status);
             })
         }
+    } else {
+        console.log("no items")
     }
 }
 
