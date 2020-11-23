@@ -86,7 +86,7 @@ function addNewListDiv() {
     let html = `
     <p>${titleOfListInput.value}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">View</button>
+    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Open</button>
     `;
     newListDiv.innerHTML = html;
 
@@ -147,9 +147,6 @@ function addNewListDiv() {
 //save funksjon
 function saveChanges() {
 
-
-
-
     cleanseLists();
 
     cleanseItems();
@@ -157,7 +154,6 @@ function saveChanges() {
     updateListTitle();
 
     updateListCont();
-
 }
 
 function cleanseLists() {
@@ -296,7 +292,7 @@ function storedItems() {
         let html = `
     <p>${list.listtitle}</p>
     <button id="${index}" class="deleteListButton"">Delete</button>
-    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">View</button>
+    <button id="${index}" class="updateListButton" onclick="updateList(this.id)">Open</button>
     `;
         newListDiv.innerHTML = html;
 
