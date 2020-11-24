@@ -21,10 +21,42 @@ sessionStorage.setItem("listData", jsontext);
 
 let credentials = null;
 
+let whatsLeft = [];
+
 function updateList(clicked_id) {
+
+    jsontext = sessionStorage.getItem("itemData");
+    let itemData = JSON.parse(jsontext);
+    console.log(itemData);
+
+    jsontext = sessionStorage.getItem("listData");
+    let listData = JSON.parse(jsontext);
+    console.log(listData);
 
     //Finner id-en til update button som har blitt klikket på
     console.log(clicked_id)
+    console.log(listData[clicked_id]);
+
+    let selected = [];
+
+    if (itemData) {
+        for (let i = 0; i < itemData.length; i++) {
+            if (itemData[i].listid === listData[clicked_id].listid) {
+                selected.push(itemData[i])
+            } else if (itemData[i].listid != listData[clicked_id].listid) {
+                whatsLeft.push(itemData[i])
+            }
+        }
+    }
+
+    console.log(whatsLeft);
+    console.log(selected);
+
+    jsontext = JSON.stringify(whatsLeft);
+    sessionStorage.setItem("itemData", jsontext);
+
+    jsontext = JSON.stringify(selected);
+    sessionStorage.setItem("selectedList", jsontext);
 
     jsontext = JSON.stringify(clicked_id);
     sessionStorage.setItem("clickedID", jsontext);
@@ -239,10 +271,14 @@ function updateListCont() {
     itemData = JSON.parse(jsontext);
     console.log(itemData)
 
-    if (itemData) {
+    if (itemData.length > 0) {
         console.log("flere items")
 
         for (let list of itemData) {
+
+            if (list === "OBJECT DELETED") {
+                continue;
+            }
 
             let body = {
                 listid: list.listid,

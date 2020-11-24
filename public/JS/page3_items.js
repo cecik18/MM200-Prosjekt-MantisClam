@@ -12,14 +12,19 @@ let listData = JSON.parse(jsontext);
 console.log(listData);
 
 //henter fra sessionstorage
+jsontext = sessionStorage.getItem("itemData");
+let itemData = JSON.parse(jsontext);
+console.log(itemData);
+
+//henter fra sessionstorage
 jsontext = sessionStorage.getItem("clickedID");
 let clickedID = JSON.parse(jsontext);
 console.log(clickedID);
 
 //henter fra sessionstorage
-jsontext = sessionStorage.getItem("itemData");
-let itemData = JSON.parse(jsontext);
-console.log(itemData);
+jsontext = sessionStorage.getItem("selectedList");
+let selectedList = JSON.parse(jsontext);
+console.log(selectedList);
 
 let newListItemInput = document.getElementById("newListItemInput");
 
@@ -29,16 +34,17 @@ titleOfList.innerHTML = listData[clickedID].listtitle;
 
 
 
-// Lager tomt array for items. hvis itemdata eksisterer (aka det finnes innhold i databasen eller sessionstorage), setter array til å være lik det for å fortsette derfra
+// Lager tomt array for items. hvis selectedList eksisterer (aka det finnes innhold i databasen eller sessionstorage), setter array til å være lik det for å fortsette derfra
 let items = []; 
-if (itemData) {
-    items = itemData;
+if (selectedList) {
+    items = selectedList;
 }
 let index = 0;
 
 //Lager nytt item i listen ved å trykke på knappen add list item
 function NewListItem() {
     let list = document.createElement("li");
+    list.id = index;
     let inputValue = document.getElementById("newListItemInput").value;
     let textNode = document.createTextNode(inputValue);
     let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';  //Delete knapp
@@ -51,7 +57,7 @@ function NewListItem() {
         items.push({ listid: listData[clickedID].listid, userid: userData.userid, listCont: inputValue }); //dytter data om listen inn i items array
         console.log(items);
         jsontext = JSON.stringify(items);
-        sessionStorage.setItem("itemData", jsontext);
+        sessionStorage.setItem("selectedList", jsontext);
         index++;
     }
     document.getElementById("newListItemInput").value = "";
@@ -62,16 +68,12 @@ function NewListItem() {
         deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
-            items.splice(target - 1, 1, "OBJECT DELETED");
+            items.splice(target, 1, "OBJECT DELETED");
+            console.log(target);
             console.log(items.length);
             console.log(items);
-            let check = items.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                items.splice(check, 1)
-                check = items.indexOf("OBJECT DELETED");
-            }
             jsontext = JSON.stringify(items);
-            sessionStorage.setItem("itemData", jsontext);
+            sessionStorage.setItem("selectedList", jsontext);
             div.style.display = "none";
         }
     }
@@ -84,7 +86,18 @@ function NewListItem() {
 //save and exit funksjon------------------------------------------------------------------------------------------------------------
 function saveChanges() {
 
+    
+    console.log(itemData);
+    itemData = itemData.concat(items);
+    console.log(itemData);
+
+    jsontext = JSON.stringify(itemData);
+    sessionStorage.setItem("itemData", jsontext);
+
     sessionStorage.removeItem("clickedID");
+
+    sessionStorage.removeItem("selectedList");
+
     location.href = "../Page2_Lists.html";
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -92,27 +105,28 @@ function saveChanges() {
 
 //Lager listene som er i databasen allerede--------------------omtrent samme funksjon som newListItem men litt andre variabler-----------------------------------------
 
-// hvis itemdata har items i seg, lag de
-if (itemData.length > 0) {
+// hvis selectedList har items i seg, lag de
+if (selectedList.length > 0) {
     storedItems();
 }
 
 function storedItems() {
 
-    jsontext = sessionStorage.getItem("itemData");
-    itemData = JSON.parse(jsontext);
-    console.log(itemData);
+    jsontext = sessionStorage.getItem("selectedList");
+    selectedList = JSON.parse(jsontext);
+    console.log(selectedList);
 
-    for (let i = 0; i < itemData.length; i++) {
-        if (itemData[i].listid === listData[clickedID].listid) {
+    for (let i = 0; i < selectedList.length; i++) {
+        if (selectedList[i].listid === listData[clickedID].listid) {
             let list = document.createElement("li");
-            let inputValue = itemData[i].listCont;
+            list.id = index;
+            let inputValue = selectedList[i].listCont;
             let textNode = document.createTextNode(inputValue);
             let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
             list.innerHTML = htmlDelete;
             list.appendChild(textNode);
             document.getElementById("listOfListItems").appendChild(list);
-            items.push({ listid: itemData[i].listid, userid: userData.userid, listCont: inputValue });
+            items.push({ listid: selectedList[i].listid, userid: userData.userid, listCont: inputValue });
             console.log(items)
             items.splice(i, 1)
             index++;
@@ -124,17 +138,12 @@ function storedItems() {
         deleteOnClick[i].onclick = function (evt) {
             let div = this.parentElement;
             let target = evt.target.id;
-            items.splice(target - 1, 1, "OBJECT DELETED");
+            items.splice(target, 1, "OBJECT DELETED");
             console.log(target);
             console.log(items.length);
             console.log(items);
-            let check = items.indexOf("OBJECT DELETED");
-            while (check > -1) {
-                items.splice(check, 1)
-                check = items.indexOf("OBJECT DELETED");
-            }
             jsontext = JSON.stringify(items);
-            sessionStorage.setItem("itemData", jsontext);
+            sessionStorage.setItem("selectedList", jsontext);
             div.style.display = "none";
         }
     }
