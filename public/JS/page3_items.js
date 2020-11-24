@@ -110,25 +110,27 @@ if (selectedList.length > 0) {
     storedItems();
 }
 
+
 function storedItems() {
+
+    items = [];
 
     jsontext = sessionStorage.getItem("selectedList");
     selectedList = JSON.parse(jsontext);
     console.log(selectedList);
 
-    for (let i = 0; i < selectedList.length; i++) {
-        if (selectedList[i].listid === listData[clickedID].listid) {
+    for (let item of selectedList) {
+        if (item.listid === listData[clickedID].listid) {
             let list = document.createElement("li");
             list.id = index;
-            let inputValue = selectedList[i].listCont;
+            let inputValue = item.listCont;
             let textNode = document.createTextNode(inputValue);
             let htmlDelete = '<button id="' + index + '" class="deleteListItemButton">Delete list item</button>';
             list.innerHTML = htmlDelete;
             list.appendChild(textNode);
             document.getElementById("listOfListItems").appendChild(list);
-            items.push({ listid: selectedList[i].listid, userid: userData.userid, listCont: inputValue });
+            items.push({ listid: item.listid, userid: userData.userid, listCont: inputValue });
             console.log(items)
-            items.splice(i, 1)
             index++;
         }
     }
