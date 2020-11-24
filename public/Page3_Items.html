@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./CSS/page3_stylesheet.css">
+    <title>Page of list items</title>
+</head>
+
+<body>
+
+    <div class="grid-container">
+        <div id="taskPlannerMenu">
+            <button id="signOutButton">Sign out</button>
+            <button id="deleteUserButton">Delete user</button>
+        </div>
+        <div id="taskPlannerHeader_page3">
+            <p id="headerTitle">MantisClam Taskplanner</p>
+            <p id="titleOfList"></p>
+        </div>
+        <div id="createNewListItem">
+
+            <input id="newListItemInput" placeholder="New list item...">
+
+            <button onclick="NewListItem()" class="addListItemButton" id="addListItemButton">Add list item</button>
+            <button onclick="saveChanges()" class="saveButton">Return to lists</button>
+
+        </div>
+
+        <div id="allYourListItems">
+            <ul id="listOfListItems">
+                <div id="loadedItems">
+
+                </div>
+
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+<script src="./JS/page3_items.js"></script>
+
+</html>
